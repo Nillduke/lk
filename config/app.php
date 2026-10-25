@@ -15,6 +15,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    // Shared hosting may use a separate, fixed document root.
+    'public_path' => env('APP_PUBLIC_PATH'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment
