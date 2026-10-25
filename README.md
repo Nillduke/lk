@@ -98,3 +98,10 @@ php -d xdebug.mode=off vendor/phpunit/phpunit/phpunit --colors=never
 Tests use transactions and require a dedicated restored test database plus the
 local admin account. Never run them against production. Private account setup,
 media and database restores are intentionally outside Git.
+
+
+### Admin SMTP settings
+
+Administrators with `manage_access` permission can open `/authuser/settings/email` (sidebar: SMTP settings). Set the delivery method, host, port, security, credentials, sender and enquiry recipient. Save first, then send a test to an address you control. STARTTLS requires TLS; SSL/TLS uses an implicit TLS connection. Log mode does not deliver email.
+
+Settings remain in the application `.env` alongside other connections. After the first admin save, mail settings are loaded on each application boot, including when Laravel configuration is cached. Passwords are encrypted with `APP_KEY`; a blank password preserves the existing credential. Keep `APP_KEY` stable. No database migration is needed. Existing mail behavior stays unchanged until settings are saved. Persistent queue workers must be restarted after settings changes (the current deployment uses synchronous mail).

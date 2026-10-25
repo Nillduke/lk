@@ -64,6 +64,9 @@ Route::post('authuser/logout', [Auth::class, 'logout'])->middleware('auth')->nam
 Route::get('authuser/logout', [Auth::class, 'logout'])->middleware('auth')->name('logout');
 Route::prefix('authuser')->middleware(['auth', AdminAccess::class])->group(function () {
     Route::get('dashboard', [Admin::class, 'dashboard'])->name('dashboard');
+    Route::get('settings/email', [\App\Http\Controllers\EmailSettingsController::class, 'edit'])->name('admin.email.edit');
+    Route::post('settings/email', [\App\Http\Controllers\EmailSettingsController::class, 'update'])->middleware('throttle:10,1')->name('admin.email.update');
+    Route::post('settings/email/test', [\App\Http\Controllers\EmailSettingsController::class, 'test'])->middleware('throttle:3,1')->name('admin.email.test');
     Route::get('manage/{resource}', [Admin::class, 'index'])->name('admin.index');
     Route::get('manage/{resource}/create', [Admin::class, 'edit'])->name('admin.create');
     Route::post('manage/{resource}', [Admin::class, 'save'])->name('admin.store');

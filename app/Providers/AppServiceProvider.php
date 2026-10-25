@@ -19,5 +19,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
+        if (!$this->app->runningUnitTests()) {
+            $this->app->make(\App\Services\EmailSettings::class)->apply();
+        }
     }
 }
