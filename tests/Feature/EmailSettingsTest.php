@@ -202,6 +202,32 @@ class EmailSettingsTest extends TestCase
         $this->assertSame('stored-password', $this->settings->connectionConfiguration($data)['password']);
     }
 
+    public function test_bcc_list_is_normalized_and_persisted_in_the_same_environment_file(): void
+    {
+        $this->admin(); $data = $this->data();
+        $data['bcc_addresses'] = ' First@example.com, second@example.com, FIRST@example.com, ';
+        $this->post(route('admin.email.update'), $data)->assertSessionHasNoErrors();
+        $env = Dotenv::parse(file_get_contents($this->envFile));
+        $this->assertSame('first@example.com, second@example.com', $env['MAIL_ADMIN_BCC']);
+        $this->assertSame($env['MAIL_ADMIN_BCC'], $this->settings->values()['bcc_addresses']);
+    }
+
+    public function test_invalid_bcc_addresses_are_rejected_without_writing_settings(): void
+    {
+        $this->admin(); $before = file_get_contents($this->envFile);
+        $data = $this->data(); $data['bcc_addresses'] = 'valid@example.com, not-an-email';
+        $this->post(route('admin.email.update'), $data)->assertSessionHasErrors('bcc_addresses');
+        $this->assertSame($before, file_get_contents($this->envFile));
+    }
+
+    public function test_email_preview_is_protected_and_uses_example_content(): void
+    {
+        $this->admin(false);
+        $this->get(route('admin.email.preview'))->assertForbidden();
+        $this->admin();
+        $this->get(route('admin.email.preview'))->assertOk()->assertSee('Example Contact')->assertSee('Report Name')->assertSee('Client IP');
+    }
+
     public function test_log_transport_cannot_claim_test_delivery(): void
     {
         $this->admin(); config(['mail.default'=>'log']);

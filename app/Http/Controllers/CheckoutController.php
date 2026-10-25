@@ -65,7 +65,7 @@ class CheckoutController extends Controller
             return DB::table('checkouts')->insertGetId($row);
         });
         session(['order_number' => $order, 'checkout_id' => $checkoutId]);
-        SiteController::notify(config('site.admin_email'), 'New checkout attempt', $order.' - '.$data['email']);
+        SiteController::notify(config('site.admin_email'), 'New checkout attempt', $order.' - '.$data['email'], true);
 
         return redirect()->route($payment === 'PayPal' ? 'paypal_redirect' : 'wt_success');
     }

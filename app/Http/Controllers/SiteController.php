@@ -191,9 +191,19 @@ return view($view, ['title' => $title, 'countries' => $this->countries(), 'indus
             abort_unless($check->json('success'), 422, 'Captcha verification failed');
         }
         $data += ['uuid' => (string) Str::uuid(), 'report_id' => $id, 'type' => $types[$type], 'status' => '1', 'created_at' => now(), 'updated_at' => now()];
-        DB::table('reports_enquiries')->insert($data);
+        $enquiryId = DB::table('reports_enquiries')->insertGetId($data);
         self::notify($data['email_id'], 'Thank you for your enquiry', 'We have received your enquiry and will contact you shortly.');
-        self::notify(config('site.admin_email'), 'New website enquiry', json_encode($data, JSON_PRETTY_PRINT));
+        if (config('site.admin_email') && config('site.mail_notifications')) {
+            try {
+                $report = $id ? DB::table('reports')->where('id', $id)->first(['title', 'slug']) : null;
+                $mail = Mail::to(config('site.admin_email'));
+                if ($bcc = \App\Support\AdminMailRecipients::bcc()) $mail->bcc($bcc);
+                $mail->send(new \App\Mail\WebsiteEnquiry($data, $report, $request->ip(), $enquiryId));
+                \Illuminate\Support\Facades\Log::info('Admin enquiry email accepted by transport', ['mailer' => config('mail.default'), 'enquiry_id' => $enquiryId]);
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
+        }
 
         return redirect()->route('enquiry_success', [$type])->with('success_message', 'Your enquiry has been received.');
     }
@@ -214,14 +224,15 @@ return view($view, ['title' => $title, 'countries' => $this->countries(), 'indus
         return response()->json(['status' => 1, 'message' => 'unsubscribed']);
     }
 
-    public static function notify($email,$subject,$body)
+    public static function notify($email,$subject,$body,$adminNotification = false)
     {
         if (! $email || ! config('site.mail_notifications')) {
             return;
         }
         try {
-            $sent = Mail::raw($body,function ($m) use ($email,$subject) {
+            $sent = Mail::raw($body,function ($m) use ($email,$subject,$adminNotification) {
                 $m->to($email)->subject($subject);
+                if ($adminNotification && ($bcc = \App\Support\AdminMailRecipients::bcc())) $m->bcc($bcc);
             });
             \Illuminate\Support\Facades\Log::info('Website email accepted by transport', ['mailer' => config('mail.default'), 'subject' => $subject, 'message_id' => $sent?->getMessageId()]);
         } catch (\Throwable $e) {

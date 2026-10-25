@@ -34,6 +34,12 @@ class EmailSettingsController extends Controller
             'from_address' => ['required', 'email:rfc', 'max:254'],
             'from_name' => ['required', 'string', 'max:150', 'not_regex:/[\r\n]/'],
             'admin_address' => ['required', 'email:rfc', 'max:254'],
+            'bcc_addresses' => ['nullable', 'string', 'max:2000', 'not_regex:/[\r\n]/', function ($attribute, $value, $fail) {
+                $emails = \App\Support\AdminMailRecipients::parse($value);
+                if (\Illuminate\Support\Facades\Validator::make(['emails' => $emails], ['emails' => 'array|max:20', 'emails.*' => 'email:rfc|max:254'])->fails()) {
+                    $fail('Enter up to 20 valid BCC email addresses, separated by commas.');
+                }
+            }],
             'notifications' => ['nullable', 'boolean'],
         ]);
         if ($data['mailer'] === 'hosting_relay') {
@@ -58,6 +64,18 @@ class EmailSettingsController extends Controller
             return back()->withErrors(['settings' => 'Email settings could not be saved. Check that the application can write its .env file.']);
         }
         return back()->with('success', 'Email settings saved. New emails will use these settings immediately.');
+    }
+
+    public function preview(Request $request)
+    {
+        $this->authorizeSettings($request);
+        return view('emails.website-enquiry', [
+            'lead' => ['type' => '1', 'full_name' => 'Example Contact', 'email_id' => 'contact@example.com',
+                'contact_no' => '+1 202 555 0123', 'company' => 'Example Company', 'role' => 'Research Manager',
+                'country' => 'United States', 'message' => "Please share a sample and the report coverage.\nWe are reviewing this market for our next project.", 'created_at' => now()],
+            'report' => (object) ['title' => 'Example Market Research Report', 'slug' => 'example-market'],
+            'clientIp' => '192.0.2.1', 'enquiryId' => null,
+        ]);
     }
 
     private function deliveryError(\Throwable $exception): string

@@ -41,6 +41,7 @@ class EmailSettings
             'mail.from.address' => $env['MAIL_FROM_ADDRESS'] ?? '',
             'mail.from.name' => $env['MAIL_FROM_NAME'] ?? '',
             'site.admin_email' => $env['MAIL_ADMIN_ADDRESS'] ?? '',
+            'site.admin_bcc' => $env['MAIL_ADMIN_BCC'] ?? '',
             'site.mail_notifications' => ($env['MAIL_NOTIFICATIONS'] ?? 'false') === 'true',
         ]);
     }
@@ -58,6 +59,7 @@ class EmailSettings
             'from_address' => config('mail.from.address'),
             'from_name' => config('mail.from.name'),
             'admin_address' => config('site.admin_email'),
+            'bcc_addresses' => config('site.admin_bcc', ''),
             'notifications' => (bool) config('site.mail_notifications'),
         ];
     }
@@ -99,6 +101,7 @@ class EmailSettings
                 'MAIL_PASSWORD_ENCRYPTED' => $password === '' ? '' : Crypt::encryptString($password),
                 'MAIL_FROM_ADDRESS' => $data['from_address'], 'MAIL_FROM_NAME' => $data['from_name'],
                 'MAIL_ADMIN_ADDRESS' => $data['admin_address'],
+                'MAIL_ADMIN_BCC' => implode(', ', \App\Support\AdminMailRecipients::parse($data['bcc_addresses'] ?? '')),
                 'MAIL_NOTIFICATIONS' => !empty($data['notifications']) ? 'true' : 'false',
             ];
             $content = file_get_contents($this->path);
