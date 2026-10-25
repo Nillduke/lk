@@ -84,6 +84,7 @@ HTML_IMAGES;
             $target = $dir.'/'.$key.'.webp';
             $temp = tempnam($dir, 'opt-'); $written = @imagewebp($image, $temp, 82); imagedestroy($image);
             if (!$written || !filesize($temp) || !rename($temp, $target)) { if (is_file($temp)) unlink($temp); return $this->lazy($tag); }
+            if (!chmod($target, 0644)) return $this->lazy($tag);
             $meta = ['width'=>$width, 'height'=>$height, 'url'=>'/frontend/optimized/'.$key.'.webp'];
             file_put_contents($metaFile, json_encode($meta), LOCK_EX);
         }
@@ -101,6 +102,7 @@ HTML_IMAGES;
                     $small = str_replace('.webp', '-'.$width.'.webp', $base);
                     $temp = tempnam($dir, 'opt-'); $written = @imagewebp($resized, $temp, 82); imagedestroy($resized);
                     if (!$written || !filesize($temp) || !rename($temp, $small)) { if (is_file($temp)) unlink($temp); continue; }
+                    if (!chmod($small, 0644)) continue;
                     $sources[] = str_replace('.webp', '-'.$width.'.webp', $meta['url']).' '.$width.'w';
                 }
                 imagedestroy($image);
