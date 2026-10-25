@@ -1,0 +1,23 @@
+/* Mobile admin layout. All data operations and form actions remain unchanged. */
+.admin-app{overflow-wrap:anywhere}.admin-app main{min-width:0}.admin-navigation>summary{display:none}.admin-app .panel{min-width:0;max-width:100%}.admin-app .table-responsive{overflow-x:auto;-webkit-overflow-scrolling:touch}.admin-app :is(input,select,textarea){min-width:0;max-width:100%}.admin-app .table{min-width:600px}.admin-app .table td{overflow-wrap:anywhere}.admin-app .pagination{flex-wrap:wrap;gap:3px}.admin-app .pagination .page-link{border-radius:4px}.admin-app nav[aria-label=Pagination]>div{flex-wrap:wrap;gap:12px}
+@media(max-width:800px){
+ .admin-app aside{position:relative;inset:auto;width:100%;padding:18px 16px 10px}
+ .admin-app aside h5{font-size:19px;margin-bottom:7px}.admin-app aside small{font-size:12px}
+ .admin-navigation{margin-top:14px}.admin-navigation>summary{display:flex;justify-content:space-between;align-items:center;padding:12px;background:#284761;color:#fff;border:1px solid #47617c;border-radius:5px;cursor:pointer;list-style:none;font-size:14px;min-height:44px}
+ .admin-navigation>summary::-webkit-details-marker{display:none}.admin-navigation[open]>summary span{transform:rotate(45deg)}
+ .admin-navigation-links{max-height:60dvh;overflow-y:auto;padding-bottom:12px}.admin-navigation-links a{min-height:44px;padding:10px 12px}
+ .admin-app main{margin:0;padding:22px 16px;width:100%;max-width:100%}
+ .admin-app main>.d-flex{align-items:flex-start!important;flex-wrap:wrap;gap:14px}.admin-app main>.d-flex h1{font-size:24px;line-height:1.4;max-width:100%;margin:0}
+ .admin-app main>.d-flex>div{display:flex;gap:8px;flex-wrap:wrap}
+ .admin-app .panel{padding:18px 15px;margin-bottom:18px;border-radius:7px}
+ .admin-app .panel>.row,.admin-app main>.row{--bs-gutter-x:20px;margin-left:-10px;margin-right:-10px}
+ .admin-app .panel form.d-flex{flex-wrap:wrap;align-items:stretch}
+ .admin-app .panel form.d-flex>.form-control,.admin-app .panel form.d-flex>.form-select{flex:1 1 160px;width:100%;min-width:0}
+ .admin-app .panel form.d-flex>.btn{flex:0 0 auto;min-height:44px}
+ .admin-app .form-control,.admin-app .form-select{font-size:16px;min-height:44px}
+ .admin-app input[type=file]{font-size:13px;padding:9px 8px}.admin-app label{font-size:14px;line-height:1.6}
+ .admin-app .btn{white-space:normal;min-height:40px;line-height:1.5}.admin-app .table .btn{min-height:36px;white-space:nowrap}
+ .admin-app .table-responsive{padding:17px 12px}.admin-app .table-responsive .table{margin-bottom:16px}
+ .admin-app nav .pagination{justify-content:flex-start}.admin-app nav p{font-size:13px;margin-bottom:10px}
+ .admin-app .row.g-4{--bs-gutter-x:20px;--bs-gutter-y:18px}
+}

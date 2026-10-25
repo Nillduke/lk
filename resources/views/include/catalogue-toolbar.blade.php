@@ -1,0 +1,5 @@
+<div class="catalogue-results-toolbar"><p>Showing <strong>{{ $cataloguePagination->firstItem() ?? 0 }}&ndash;{{ $cataloguePagination->lastItem() ?? 0 }}</strong> of <strong>{{ number_format($cataloguePagination->total()) }}</strong> results</p>
+<form action="{{ url()->current() }}" method="get" class="catalogue-page-size">
+@foreach(request()->except(['per_page','page','_token']) as $name=>$value) @if(is_scalar($value))<input type="hidden" name="{{ $name }}" value="{{ $value }}">@endif @endforeach
+<label for="catalogue-per-page">Show</label><select name="per_page" id="catalogue-per-page" onchange="this.form.submit()">@foreach([12,20,25,50,100] as $size)<option value="{{ $size }}" @selected($cataloguePagination->perPage()==$size)>{{ $size }}</option>@endforeach</select><span>per page</span>
+</form></div>

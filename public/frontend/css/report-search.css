@@ -1,0 +1,26 @@
+/* Shared report autocomplete and accessible header search controls. */
+.site-redesign #header-search-toggle{display:flex;align-items:center;justify-content:center;width:44px;height:44px;min-height:44px;padding:10px;border:1px solid #d9e2f2;border-radius:50%;background:#fff;color:#142d82;cursor:pointer}
+.site-redesign #header-search-toggle svg,.site-redesign #searchDiv button svg{display:block;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.site-redesign #header-search-toggle:hover{background:#eff4fc}.site-redesign #header-search-toggle:focus-visible{outline:3px solid #9ab5df;outline-offset:2px}
+.site-redesign .site-header .hdr-srch{width:44px;height:44px;flex-basis:44px}
+.site-redesign #searchDiv #demo-21{position:relative;padding:0;margin:0;width:100%;max-width:none}
+.site-redesign #searchDiv .input-group{display:flex;align-items:center;flex-wrap:nowrap;gap:8px}
+.site-redesign #searchDiv .input-group>input{flex:1;min-width:0;width:auto;font-size:16px!important;min-height:48px;border-radius:4px}
+.site-redesign #searchDiv :is(.header-search-submit,#bottle){display:flex;align-items:center;justify-content:center;flex:0 0 44px;width:44px;height:48px;padding:10px;border:1px solid #c5d3e9;border-radius:4px;color:#142d82;background:#fff;cursor:pointer}
+.site-redesign #searchDiv .header-search-submit{background:#142d82;color:#fff;border-color:#142d82}
+.site-redesign form[data-report-search]{position:relative}
+.site-redesign .report-search-panel[hidden]{display:none!important}
+.site-redesign .report-search-panel{position:absolute;left:0;right:0;top:calc(100% + 8px);z-index:70;padding:0;max-height:min(420px,60dvh);overflow-y:auto;overscroll-behavior:contain;background:#fff;border:1px solid #d4dfed;border-radius:6px;box-shadow:0 10px 30px #142d8224;text-align:left;color:#26324a;font-family:Roboto,Arial,sans-serif}
+.site-redesign .report-search-status{padding:12px 16px;color:#61748e;font-size:12px;line-height:1.6;border-bottom:1px solid #e4ebf5}
+.site-redesign .report-search-results{list-style:none!important;padding:0!important;margin:0!important;display:block!important}
+.site-redesign .report-search-results li{list-style:none!important;padding:0!important;margin:0!important;border:0!important;background:none!important;box-shadow:none!important}
+.site-redesign .report-search-results a{display:flex;flex-direction:column;gap:4px;min-height:44px;padding:12px 16px;color:#17386c;text-decoration:none;overflow-wrap:anywhere;font-family:Roboto,Arial,sans-serif}
+.site-redesign .report-search-results a:hover,.site-redesign .report-search-results a[aria-selected=true]{background:#f0f5fd;color:#142d82}
+.site-redesign .report-search-result-title{font-size:15px;font-weight:500;line-height:1.5}
+.site-redesign .report-search-results small{font-size:11px;line-height:1.5;color:#70809a}
+.site-redesign .report-search-view-all{display:block;padding:13px 16px;border-top:1px solid #dfe7f2;color:#142d82;font-size:13px;font-weight:500;line-height:1.5;text-decoration:none;background:#f7faff;min-height:44px}
+.site-redesign .report-search-view-all[hidden]{display:none!important}
+.site-redesign .report-search-view-all:hover{background:#edf3fe}
+.page-home #demo{z-index:20}.page-home .home-discovery:has(.is-search-open){z-index:10}
+.site-redesign #searchDiv .report-search-panel{position:relative;top:auto;margin-top:10px;max-height:min(420px,50dvh);box-shadow:none}
+@media(max-width:991px){.site-redesign #searchDiv .report-search-panel{max-height:none;overflow:visible}.site-redesign .report-search-panel{max-height:min(340px,48dvh)}.site-redesign .report-search-result-title{font-size:14px}.site-redesign .report-search-results a{padding:11px 13px}}

@@ -1,0 +1,85 @@
+/* Mobile usability fixes shared by public pages; desktop styling stays unchanged. */
+@media(max-width:991px){
+
+ .site-redesign .site-header .navbar-collapse{max-height:calc(var(--mobile-viewport-height,100dvh) - var(--mobile-header-height,100px));overscroll-behavior:contain;-webkit-overflow-scrolling:touch;scroll-padding-bottom:18px}
+ .site-redesign .site-header .navbar-collapse.show{overflow-y:auto}
+ .site-redesign .site-header .mega-menu{overscroll-behavior:contain}
+ .site-redesign .site-header .hdr-srch,.site-redesign .site-header #demo-2{width:44px;height:44px;flex-basis:44px}
+ .site-redesign .site-header #demo-2 input[type=search]{width:44px!important;height:44px!important;min-width:44px!important}
+ .site-redesign .site-header .mega-menu-cta{min-height:44px}
+ .site-redesign :is(.report-title-toggle,.catalogue-title-toggle,.enquiry-title-toggle,.catalogue-intro-toggle,.interior-expand-button,.report-card-expand){min-height:40px;display:inline-flex;align-items:center;padding-top:7px;padding-bottom:7px;line-height:1.5}
+ .site-redesign :is(.report-title-toggle,.catalogue-title-toggle,.enquiry-title-toggle,.catalogue-intro-toggle,.interior-expand-button,.report-card-expand)[hidden]{display:none!important}
+ .site-redesign .enquiry-report-header .enquiry-title-toggle{display:flex;width:fit-content}
+ .site-redesign .interior-table-wrap{overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+ .site-redesign .interior-table-wrap:focus-visible{outline:2px solid #7597ce;outline-offset:3px}
+ .site-redesign .billing-table{min-width:350px;width:100%}
+ .site-redesign .billing-table :is(td,th):first-child,.site-redesign .billing-table :is(td,th):last-child{white-space:nowrap}
+ .site-redesign .billing-table #ddl_lice_type{width:100%!important;min-width:145px}
+ .site-redesign .owl-stage-outer{overflow:hidden}
+}
+@media(max-width:767px){
+ .site-redesign :is(input:not([type=hidden]):not([type=checkbox]):not([type=radio]),select,textarea){font-size:16px!important;max-width:100%}
+ .site-redesign :is(input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=file]),select){min-height:44px}
+ .site-redesign input[type=file]{min-width:0;width:100%}
+ .site-redesign :is(.btn,button[type=submit],.contactus-btn,.navbar-toggler,.btn-primary,.banner-btn-bg){min-height:44px}
+ .site-redesign .catalogue-page .catalogue-report-grid .catalogue-card-actions .btn-latrepView{min-height:44px;display:inline-flex;align-items:center;justify-content:center}
+ .site-redesign .catalogue-page-size select{font-size:16px!important;min-height:44px;min-width:64px;padding:8px 6px}
+ .site-redesign .catalogue-results-toolbar{align-items:center;gap:10px;flex-wrap:wrap}
+ .site-redesign .catalogue-page-size{gap:6px}.site-redesign .catalogue-page-size label,.site-redesign .catalogue-page-size span{font-size:12px}
+ .site-redesign .catalogue-results-toolbar p{font-size:12px;flex:1 1 155px;min-width:0}
+ .site-redesign .catalogue-pagination .page-link,.site-redesign .interior-pagination .page-link{min-width:36px;min-height:40px;display:flex;align-items:center;justify-content:center}
+ .site-redesign .pagination{flex-wrap:wrap}
+ .site-redesign .catalogue-sidebar .form-check{align-items:center;min-height:44px}
+ .site-redesign .catalogue-sidebar .form-check-input{margin-top:0;flex-shrink:0}
+ .site-redesign .catalogue-sidebar .form-check-label{padding-top:6px;padding-bottom:6px}
+ .site-redesign .catalogue-categories nav a{min-height:44px}
+ .site-redesign .consent-control{display:block;min-height:44px;line-height:1.9;padding:5px 0;margin:0;cursor:pointer}
+ .site-redesign .consent-control input{margin-right:7px;vertical-align:middle;accent-color:#173c8b}
+ .site-redesign .shared-unsubscribe #reasons{width:100%!important;max-width:100%;text-overflow:ellipsis}
+ .site-redesign .shared-unsubscribe .mailinfo{overflow-wrap:anywhere}
+ .site-redesign .shared-unsubscribe .form-control{width:100%!important}
+ .site-redesign .site-footer .social{flex-wrap:wrap;row-gap:10px}
+ .site-redesign .site-footer .social-wrapper{width:40px;height:40px;flex:0 0 40px}
+ .site-redesign .site-footer>.container:last-of-type{padding-bottom:18px}
+ .site-redesign #cookieNotice{padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+ .site-redesign #cookieNotice p{font-size:12px;line-height:1.65}
+ .site-redesign #cookieNotice .btn-primary{min-height:44px;min-width:80px;font-size:13px;padding:10px 18px}
+ .site-redesign .home-discovery-form{align-items:stretch}
+ .site-redesign .home-discovery-form button{min-height:47px}
+ .site-redesign .home-discovery-form input{font-size:16px!important}
+ .site-redesign .latest-reports-section .latest-report-card .right-foot-p{line-height:2.2}
+ .site-redesign .latest-reports-section .right-foot-p .read-more{display:inline-flex;align-items:center;min-height:40px;float:none;margin-left:9px}
+ .site-redesign .enquiry-form .g-recaptcha{max-width:100%;overflow-x:auto}
+}
+@media(max-width:360px){
+ .site-redesign .site-header .custom-logo{width:148px}
+ .site-redesign .site-header .header .top-contact-info{gap:8px}
+ .site-redesign .site-header .header .contact-details-contents img{width:12px;height:12px}
+ .site-redesign .site-header .header .contact-details-contents,.site-redesign .site-header .header .contact-details-contents a{font-size:9px!important}
+ .site-redesign .page-title{overflow-wrap:break-word}
+ .site-redesign .catalogue-page .catalogue-report-grid .catalogue-card-actions{flex-direction:column;align-items:stretch}
+ .site-redesign .catalogue-page .catalogue-report-grid .catalogue-card-actions .btn-latrepView{width:100%}
+ .site-redesign .enquiry-form-panel{padding-left:16px;padding-right:16px}
+}
+@media(max-width:991px){.site-redesign :is(input:not([type=hidden]):not([type=checkbox]):not([type=radio]),select,textarea){font-size:16px!important;max-width:100%}.site-redesign :is(input:not([type=hidden]):not([type=checkbox]):not([type=radio]):not([type=file]),select){min-height:44px}.site-redesign .catalogue-page-size select{min-height:44px}}
+@media(max-width:991px){
+ .site-redesign .site-header #searchDiv{position:fixed;top:var(--mobile-header-height,96px);left:0;right:0;width:100%;z-index:1060;max-height:calc(var(--mobile-viewport-height,100dvh) - var(--mobile-header-height,96px));overflow-y:auto;overscroll-behavior:contain;padding:16px 0;background:#f7faff}
+ .site-redesign .site-header #searchDiv .input-group{display:flex;flex-wrap:nowrap;align-items:center;gap:8px}
+ .site-redesign .site-header #searchDiv .input-group>.form-control{min-width:0;flex:1;width:auto;font-size:16px!important}
+ .site-redesign .site-header #searchDiv #demo-21{padding:0}
+ .site-redesign .site-header #searchDiv .input-group-append{flex:0 0 44px}
+ .site-redesign .site-header #bottle{display:flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid #d0dcef;border-radius:4px;background:#fff}
+ .site-redesign .site-header #bottle img{margin-left:0!important}
+ .site-redesign .site-header #autores{max-height:none;overflow:visible}
+ .site-redesign .site-header #autores a{display:block;min-height:44px;padding:8px 0;font-size:14px;line-height:1.65;overflow-wrap:anywhere}
+}
+@media(max-width:767px){
+ .site-redesign.page-home #demo .carousel-indicators{display:flex!important;align-items:center;justify-content:center;gap:3px;height:44px;bottom:0;margin:0;left:0;right:0}
+ .site-redesign.page-home #demo .carousel-indicators button{display:flex;align-items:center;justify-content:center;width:44px!important;height:44px!important;min-height:44px;margin:0;padding:0;background:transparent!important;border:0;opacity:1;position:relative;box-sizing:border-box}
+ .site-redesign.page-home #demo .carousel-indicators button:after{content:'';display:block;width:7px;height:7px;border-radius:50%;background:#26448c;opacity:.35}
+ .site-redesign.page-home #demo .carousel-indicators button.active:after{width:18px;border-radius:6px;opacity:1}
+ .site-redesign.page-home .home-discovery{bottom:56px}
+}
+@media(max-width:767px){.site-redesign.page-home #demo .carousel-inner,.site-redesign.page-home #demo .carousel-item{height:var(--mobile-hero-height,610px)}}
+
+@media(max-width:991px){.site-redesign.page-home blockquote.addCurlys{padding-left:32px;padding-right:32px}.site-redesign.page-home blockquote.addCurlys:before{left:0;right:auto}.site-redesign.page-home blockquote.addCurlys:after{right:0;left:auto}}

@@ -1,0 +1,10 @@
+{
+  "report": {
+    "source": "/frontend/dist/report.f754361acd0e.css",
+    "file": "/frontend/dist/critical-report.dc53597ef775.css"
+  },
+  "news": {
+    "source": "/frontend/dist/interior.a1728c66951b.css",
+    "file": "/frontend/dist/critical-news.9c662b6a4bcf.css"
+  }
+}

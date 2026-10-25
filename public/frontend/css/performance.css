@@ -1,0 +1,20 @@
+/* Stable initial geometry; colors and content inherit the existing design. */
+.title-toggle-slot{min-height:40px}.title-toggle-slot:has(.report-title-toggle){min-height:44px}.title-toggle-slot button{margin-top:0!important;margin-bottom:0!important}
+.catalogue-filter-toggle{display:none}.site-redesign img{max-width:100%}
+@media(max-width:767px){.catalogue-filter-toggle{display:flex;justify-content:space-between;align-items:center;width:100%;padding:14px 17px;border:0;background:transparent;color:#193b73;font:600 13px/1.5 Roboto,Arial,sans-serif;text-align:left}.catalogue-sidebar-panel:not(.is-open)>.catalogue-sidebar-body{display:none}.catalogue-sidebar-panel.is-open>.catalogue-filter-toggle{border-bottom:1px solid #dce5f3}.catalogue-sidebar-panel.is-open>.catalogue-filter-toggle span{transform:rotate(45deg)}}
+
+.page-report #owl-demo2 .repcover-min{width:145px;max-width:100%}
+
+/* Report sample CTAs: consistent navy action and a quiet blue surface. */
+.page-report .sample-download-cont{width:100%;margin:28px 0;padding:22px 24px;background:#f1f5fc;border:1px solid #dbe4f3;border-left:4px solid #1b3180;border-radius:10px;box-shadow:0 4px 14px #172b5310}
+.page-report .sample-download-cont>.container{padding:0;max-width:none}
+.page-report .sample-download-cont .row{display:flex;flex-wrap:wrap;align-items:center;gap:16px;margin:0}
+.page-report .sample-download-cont .row>[class*="col-"]{padding:0;width:auto;min-width:0;flex:1 1 220px}
+.page-report .sample-download-cont .row>[class*="col-"]:last-child{flex:0 1 auto}
+.page-report .contcss .sample-download-cont .sample-content p,.page-report .sample-download-cont .sample-content p{margin:0!important;color:#182d61!important;font-family:Roboto,Arial,sans-serif!important;font-size:17px!important;line-height:1.5!important;font-weight:600;text-align:left!important}
+.page-report .sample-download-cont .btn-sample-dwn-cont,.page-report .sample-download .btn-sample-dwn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:48px;max-width:100%;padding:12px 22px;border:1px solid #1b3180;border-radius:6px;background:#1b3180;color:#fff!important;font-family:Roboto,Arial,sans-serif;font-size:14px;font-weight:600;line-height:1.5;text-transform:none;text-decoration:none;box-shadow:0 3px 8px #1b318020;transition:background .18s,box-shadow .18s}
+.page-report .sample-download-cont .btn-sample-dwn-cont:hover,.page-report .sample-download .btn-sample-dwn:hover{background:#122463;border-color:#122463;color:#fff;box-shadow:0 5px 12px #1b318030}
+.page-report .sample-download-cont .btn-sample-dwn-cont:focus-visible,.page-report .sample-download .btn-sample-dwn:focus-visible{outline:3px solid #7796db;outline-offset:3px}
+.page-report .sample-download{background:#f1f5fc;border-top:1px solid #dbe4f3;border-bottom:1px solid #dbe4f3;padding:30px 0}
+.page-report .sample-download .sample-content h3{color:#182d61!important;font-size:24px;line-height:1.4;margin:0}
+@media(max-width:767px){.page-report .sample-download-cont{padding:20px;margin:24px 0}.page-report .sample-download-cont .row>[class*="col-"]{flex:1 1 100%;width:100%}.page-report .sample-download-cont .btn-sample-dwn-cont{width:100%}.page-report .sample-download .sample-content h3{font-size:22px;margin-bottom:18px}}
