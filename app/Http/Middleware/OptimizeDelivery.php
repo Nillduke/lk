@@ -79,10 +79,11 @@ HTML_IMAGES;
             if (!$image) return $tag;
             if (!is_dir($dir)) mkdir($dir, 0755, true);
             $width = min(1920, $size[0]); $height = max(1, (int)round($size[1]*$width/$size[0]));
-            if ($width !== $size[0]) { $resized = imagescale($image, $width, $height, IMG_BICUBIC_FIXED); imagedestroy($image); $image = $resized; }
+            if ($width !== $size[0]) { $resized = $this->resize($image, $width, $height); imagedestroy($image); if (!$resized) return $this->lazy($tag); $image = $resized; }
             imagepalettetotruecolor($image); imagealphablending($image, true); imagesavealpha($image, true);
             $target = $dir.'/'.$key.'.webp';
-            $temp = tempnam($dir, 'opt-'); imagewebp($image, $temp, 82); rename($temp, $target); imagedestroy($image);
+            $temp = tempnam($dir, 'opt-'); $written = @imagewebp($image, $temp, 82); imagedestroy($image);
+            if (!$written || !filesize($temp) || !rename($temp, $target)) { if (is_file($temp)) unlink($temp); return $this->lazy($tag); }
             $meta = ['width'=>$width, 'height'=>$height, 'url'=>'/frontend/optimized/'.$key.'.webp'];
             file_put_contents($metaFile, json_encode($meta), LOCK_EX);
         }
@@ -94,10 +95,12 @@ HTML_IMAGES;
                 foreach ([480, 960] as $width) {
                     if ($width >= $meta['width']) continue;
                     $height = max(1, (int)round($meta['height']*$width/$meta['width']));
-                    $resized = imagescale($image, $width, $height, IMG_BICUBIC_FIXED);
+                    $resized = $this->resize($image, $width, $height);
+                    if (!$resized) continue;
                     imagealphablending($resized, true); imagesavealpha($resized, true);
                     $small = str_replace('.webp', '-'.$width.'.webp', $base);
-                    $temp = tempnam($dir, 'opt-'); imagewebp($resized, $temp, 82); rename($temp, $small); imagedestroy($resized);
+                    $temp = tempnam($dir, 'opt-'); $written = @imagewebp($resized, $temp, 82); imagedestroy($resized);
+                    if (!$written || !filesize($temp) || !rename($temp, $small)) { if (is_file($temp)) unlink($temp); continue; }
                     $sources[] = str_replace('.webp', '-'.$width.'.webp', $meta['url']).' '.$width.'w';
                 }
                 imagedestroy($image);
@@ -114,6 +117,19 @@ HTML_IMAGES;
         if (!preg_match('~\bwidth\s*=~i', $tag) && !preg_match('~\bheight\s*=~i', $tag)) $tag = substr($tag,0,-1).' width="'.$meta['width'].'" height="'.$meta['height'].'">';
         if (!preg_match('~\bdecoding\s*=~i', $tag)) $tag = substr($tag,0,-1).' decoding="async">';
         return $this->lazy($tag);
+    }
+
+    private function resize(\GdImage $image, int $width, int $height): \GdImage|false
+    {
+        $resized = @imagescale($image, $width, $height, IMG_BICUBIC_FIXED);
+        if ($resized) return $resized;
+        // Some shared-hosting GD builds cannot use the bicubic scaler.
+        $resized = @imagecreatetruecolor($width, $height);
+        if (!$resized) return false;
+        imagealphablending($resized, false); imagesavealpha($resized, true);
+        imagefill($resized, 0, 0, imagecolorallocatealpha($resized, 0, 0, 0, 127));
+        if (!@imagecopyresampled($resized, $image, 0, 0, 0, 0, $width, $height, imagesx($image), imagesy($image))) { imagedestroy($resized); return false; }
+        return $resized;
     }
 
     private function lazy(string $tag): string
