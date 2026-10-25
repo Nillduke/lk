@@ -62,6 +62,23 @@ class EmailSettings
         ];
     }
 
+    public function connectionConfiguration(array $data): array
+    {
+        if ($data['mailer'] === 'hosting_relay') {
+            return ['transport' => 'smtp', 'scheme' => 'smtp', 'host' => '127.0.0.1', 'port' => 25,
+                'auto_tls' => false, 'require_tls' => false, 'timeout' => 5,
+                'local_domain' => parse_url(config('app.url'), PHP_URL_HOST)];
+        }
+        $password = $data['smtp_password'] ?? '';
+        if ($password === '') $password = config('mail.mailers.smtp.password');
+        if (!empty($data['clear_password'])) $password = null;
+        return ['transport' => 'smtp', 'scheme' => $data['security'] === 'ssl' ? 'smtps' : 'smtp',
+            'host' => $data['host'], 'port' => (int) $data['port'],
+            'username' => $data['username'] ?? null, 'password' => $password,
+            'auto_tls' => $data['security'] !== 'none', 'require_tls' => $data['security'] === 'tls',
+            'timeout' => 5, 'local_domain' => parse_url(config('app.url'), PHP_URL_HOST)];
+    }
+
     public function save(array $data): void
     {
         $lock = fopen(storage_path('framework/email-settings.lock'), 'c');

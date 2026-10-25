@@ -42,6 +42,14 @@ class EmailSettingsController extends Controller
                 return back()->withErrors(['from_address' => 'The GoDaddy relay requires a sender email on your website domain.']);
             }
         }
+        if (in_array($data['mailer'], ['smtp', 'hosting_relay'], true)) {
+            try {
+                app(\App\Services\SmtpConnection::class)->verify($settings->connectionConfiguration($data));
+            } catch (\Throwable $exception) {
+                \Illuminate\Support\Facades\Log::warning('Email settings connection rejected before save', ['candidate_mailer' => $data['mailer'], 'active_mailer' => config('mail.default'), 'reason' => $this->deliveryError($exception)]);
+                return back()->withInput($request->except(['smtp_password', '_token']))->withErrors(['connection' => 'Settings were not changed. '.$this->deliveryError($exception)]);
+            }
+        }
         try {
             $settings->save($data);
             Mail::purge();

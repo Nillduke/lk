@@ -24,6 +24,9 @@ class EmailSettingsTest extends TestCase
         $this->settings = new EmailSettings($this->envFile);
         $this->app->instance(EmailSettings::class, $this->settings);
         $this->withoutMiddleware(AdminAccess::class);
+        $probe = Mockery::mock(\App\Services\SmtpConnection::class);
+        $probe->shouldReceive('verify')->andReturnNull();
+        $this->app->instance(\App\Services\SmtpConnection::class, $probe);
     }
 
     protected function tearDown(): void
@@ -170,6 +173,33 @@ class EmailSettingsTest extends TestCase
         Mail::shouldReceive('mailer')->once()->andReturn($mailer);
         Mail::shouldReceive('raw')->never();
         $this->post(route('admin.email.connection'))->assertSessionHasNoErrors()->assertSessionHas('success');
+    }
+
+    public function test_failed_smtp_connection_cannot_replace_saved_working_delivery(): void
+    {
+        $this->admin(); config(['mail.default' => 'hosting_relay']);
+        $before = file_get_contents($this->envFile);
+        $probe = Mockery::mock(\App\Services\SmtpConnection::class);
+        $probe->shouldReceive('verify')->once()->andThrow(new \RuntimeException('Connection timed out: do-not-expose'));
+        $this->app->instance(\App\Services\SmtpConnection::class, $probe);
+        $this->post(route('admin.email.update'), $this->data())->assertSessionHasErrors('connection');
+        $this->assertSame($before, file_get_contents($this->envFile));
+        $this->assertSame('hosting_relay', config('mail.default'));
+        $this->assertNull(session('_old_input.smtp_password'));
+        $this->assertStringContainsString('Settings were not changed', session('errors')->first('connection'));
+    }
+
+    public function test_relay_connection_candidate_excludes_saved_external_credentials(): void
+    {
+        $data = $this->data(); $data['mailer'] = 'hosting_relay';
+        $candidate = $this->settings->connectionConfiguration($data);
+        $this->assertSame('127.0.0.1', $candidate['host']);
+        $this->assertArrayNotHasKey('password', $candidate);
+        $this->assertArrayNotHasKey('username', $candidate);
+        $data['mailer'] = 'smtp';
+        $this->assertSame($data['smtp_password'], $this->settings->connectionConfiguration($data)['password']);
+        $data['smtp_password'] = ''; config(['mail.mailers.smtp.password' => 'stored-password']);
+        $this->assertSame('stored-password', $this->settings->connectionConfiguration($data)['password']);
     }
 
     public function test_log_transport_cannot_claim_test_delivery(): void
