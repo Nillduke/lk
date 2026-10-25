@@ -25,6 +25,11 @@ class EmailSettings
         $security = $env['MAIL_SECURITY'] ?? 'tls';
         config([
             'mail.default' => $env['MAIL_MAILER'] ?? 'smtp',
+            'mail.mailers.hosting_relay' => [
+                'transport' => 'smtp', 'scheme' => 'smtp', 'host' => '127.0.0.1', 'port' => 25,
+                'username' => null, 'password' => null, 'auto_tls' => false, 'require_tls' => false,
+                'timeout' => 10, 'local_domain' => parse_url(config('app.url'), PHP_URL_HOST),
+            ],
             'mail.mailers.smtp.url' => null,
             'mail.mailers.smtp.scheme' => $security === 'ssl' ? 'smtps' : 'smtp',
             'mail.mailers.smtp.host' => $env['MAIL_HOST'] ?? '',

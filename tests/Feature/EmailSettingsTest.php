@@ -56,6 +56,7 @@ class EmailSettingsTest extends TestCase
         $this->get(route('admin.email.edit'))->assertForbidden();
         $this->post(route('admin.email.update'), $this->data())->assertForbidden();
         $this->post(route('admin.email.test'), ['test_recipient'=>'test@example.com'])->assertForbidden();
+        $this->post(route('admin.email.connection'))->assertForbidden();
     }
 
     public function test_page_has_masked_empty_password_and_test_form(): void
@@ -127,6 +128,48 @@ class EmailSettingsTest extends TestCase
         Mail::shouldReceive('raw')->once()->andThrow(new \RuntimeException('sensitive-password transport debug'));
         $this->post(route('admin.email.test'), ['test_recipient'=>'test@example.com'])->assertSessionHasErrors('test_recipient');
         $this->assertStringNotContainsString('sensitive-password', json_encode(session()->all()));
+    }
+
+    public function test_hosting_relay_preserves_credentials_but_never_uses_them_for_local_delivery(): void
+    {
+        $this->admin();
+        $data = $this->data(); $data['mailer'] = 'hosting_relay';
+        $domain = preg_replace('/^www\./', '', parse_url(config('app.url'), PHP_URL_HOST));
+        $data['from_address'] = 'sales@'.$domain;
+        $this->post(route('admin.email.update'), $data)->assertSessionHasNoErrors();
+        $this->assertSame('hosting_relay', config('mail.default'));
+        $this->assertNull(config('mail.mailers.hosting_relay.password'));
+        $this->assertNull(config('mail.mailers.hosting_relay.username'));
+        $this->assertSame('127.0.0.1', config('mail.mailers.hosting_relay.host'));
+        $this->assertSame($data['smtp_password'], config('mail.mailers.smtp.password'));
+    }
+
+    public function test_hosting_relay_rejects_sender_on_an_unrelated_domain(): void
+    {
+        $this->admin(); $data = $this->data(); $data['mailer'] = 'hosting_relay';
+        $this->post(route('admin.email.update'), $data)->assertSessionHasErrors('from_address');
+    }
+
+    public function test_connection_timeout_is_explained_without_exposing_transport_details(): void
+    {
+        $this->admin(); config(['mail.default'=>'smtp']);
+        Mail::shouldReceive('mailer')->once()->andThrow(new \RuntimeException('Connection timed out: private-credential'));
+        $this->post(route('admin.email.connection'))->assertSessionHasErrors('connection');
+        $this->assertStringContainsString('hosting may block', session('errors')->first('connection'));
+        $this->assertStringNotContainsString('private-credential', session('errors')->first('connection'));
+    }
+
+    public function test_connection_check_starts_and_stops_transport_without_sending(): void
+    {
+        $this->admin(); config(['mail.default'=>'hosting_relay']);
+        $transport = Mockery::mock(\Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport::class);
+        $transport->shouldReceive('start')->once();
+        $transport->shouldReceive('stop')->once();
+        $mailer = Mockery::mock(\Illuminate\Mail\Mailer::class);
+        $mailer->shouldReceive('getSymfonyTransport')->once()->andReturn($transport);
+        Mail::shouldReceive('mailer')->once()->andReturn($mailer);
+        Mail::shouldReceive('raw')->never();
+        $this->post(route('admin.email.connection'))->assertSessionHasNoErrors()->assertSessionHas('success');
     }
 
     public function test_log_transport_cannot_claim_test_delivery(): void

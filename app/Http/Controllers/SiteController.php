@@ -220,9 +220,10 @@ return view($view, ['title' => $title, 'countries' => $this->countries(), 'indus
             return;
         }
         try {
-            Mail::raw($body,function ($m) use ($email,$subject) {
+            $sent = Mail::raw($body,function ($m) use ($email,$subject) {
                 $m->to($email)->subject($subject);
             });
+            \Illuminate\Support\Facades\Log::info('Website email accepted by transport', ['mailer' => config('mail.default'), 'subject' => $subject, 'message_id' => $sent?->getMessageId()]);
         } catch (\Throwable $e) {
             report($e);
         }
