@@ -109,6 +109,12 @@ return view('admin.dashboard', compact('counts'));
         }
         if ($resource === 'reports') {
             $request->validate(['title' => 'required|string|max:1500', 'category_id' => 'required|exists:categories,id', 'publisher_id' => 'required|exists:publishers,id', 'slug' => 'nullable|string|max:150', 'pub_date' => 'required|date', 'pages' => 'nullable|integer|min:0']);
+            $request->validate([
+                'description' => 'nullable|string|max:500', 'keyword' => 'nullable|string|max:100',
+                'region' => 'nullable|string|max:50', 'meta_title' => 'nullable|string|max:500',
+                'meta_description' => 'nullable|string|max:500', 'meta_keywords' => 'nullable|string|max:500',
+                'content' => 'nullable|string', 'toc' => 'nullable|string', 'tables_figures' => 'nullable|string',
+            ]);
         }
         if ($resource === 'users') {
             $request->validate(['name' => 'required|string|max:100', 'email' => 'required|email|max:50|unique:users,email,'.($record->id ?? 'NULL'), 'password' => ($record ? 'nullable' : 'required').'|string|min:10']);
@@ -142,6 +148,7 @@ return view('admin.dashboard', compact('counts'));
                 $data[$k] = json_encode($v);
             }
         }
+        if ($resource === 'reports' && $request->exists('pages') && $request->input('pages') === null) $data['pages'] = 0;
         if ($resource === 'reports' && $request->has('report_segments_present')) {
             $data['key_info'] = $reportOptions->segments($request, $record);
         }
@@ -193,8 +200,9 @@ return view('admin.dashboard', compact('counts'));
                 $id = DB::table($def['table'])->insertGetId($data, $def['pk']);
             }
             if ($resource === 'reports') {
-                $meta = $request->only(['content', 'toc', 'tables_figures']);
+                $meta = array_map(fn ($value) => $value ?? '', $request->only(['content', 'toc', 'tables_figures']));
                 if ($meta) {
+                    if (!array_key_exists('content', $meta) && !DB::table('reports_meta')->where('report_id', $id)->exists()) $meta['content'] = '';
                     DB::table('reports_meta')->updateOrInsert(['report_id' => $id], $meta + ['updated_at' => now(), 'created_at' => now()]);
                 }
                 if ($licenseRows !== null) $reportOptions->saveLicenses((int)$id, $licenseRows);

@@ -1,4 +1,4 @@
--- Eternity Insights: consolidated database update, 24 October 2026.
+-- Eternity Insights: consolidated database update, 1 November 2026.
 -- Import into your EXISTING ei_db database using phpMyAdmin > Import.
 -- WAMP MariaDB syntax; tested on MariaDB 11.3. Safe to import repeatedly.
 -- Requires original reports, reports_licenses and news tables.
@@ -48,6 +48,9 @@ ALTER TABLE `news`
  ADD INDEX IF NOT EXISTS `lr_news_live_date_idx` (`status`, `deleted_at`, `created_at`),
  ADD INDEX IF NOT EXISTS `lr_news_slug_live_idx` (`slug`, `status`, `deleted_at`);
 
+-- The editor supports detailed segment/company lists exceeding the original 1,000-character column.
+ALTER TABLE `reports` MODIFY `key_info` MEDIUMTEXT NULL;
+
 -- Record completed migrations without duplicating existing history.
 CREATE TABLE IF NOT EXISTS `lr_migrations` (
  `id` int unsigned NOT NULL AUTO_INCREMENT,
@@ -62,3 +65,7 @@ WHERE NOT EXISTS (SELECT 1 FROM `lr_migrations` WHERE `migration` = '2026_10_24_
 INSERT INTO `lr_migrations` (`migration`, `batch`)
 SELECT '2026_10_24_000002_add_public_catalogue_performance_indexes', @ei_update_batch
 WHERE NOT EXISTS (SELECT 1 FROM `lr_migrations` WHERE `migration` = '2026_10_24_000002_add_public_catalogue_performance_indexes');
+
+INSERT INTO `lr_migrations` (`migration`, `batch`)
+SELECT '2026_11_01_000001_expand_report_key_info', @ei_update_batch
+WHERE NOT EXISTS (SELECT 1 FROM `lr_migrations` WHERE `migration` = '2026_11_01_000001_expand_report_key_info');
