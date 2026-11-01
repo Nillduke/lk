@@ -1,7 +1,7 @@
 @extends('admin.layout')
 @section('title','Report content cleanup')
 @push('styles')
-<style>.cleanup-change{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}.cleanup-change>div{min-width:0;border:1px solid #dce4ed;border-radius:6px;padding:14px;background:#f8fafc;overflow-wrap:anywhere}.cleanup-change p{margin:8px 0 0;white-space:pre-wrap}.cleanup-title{font-size:17px;line-height:1.6}.cleanup-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}@@media(max-width:800px){.cleanup-change{grid-template-columns:1fr}}</style>
+<style>.cleanup-select{flex:0 0 18px;width:18px;height:18px}.cleanup-report-title{min-width:0}.cleanup-title{overflow-wrap:anywhere}#cleanup-select-all{width:18px;height:18px;vertical-align:middle;margin-right:6px}.cleanup-change{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}.cleanup-change>div{min-width:0;border:1px solid #dce4ed;border-radius:6px;padding:14px;background:#f8fafc;overflow-wrap:anywhere}.cleanup-change p{margin:8px 0 0;white-space:pre-wrap}.cleanup-title{font-size:17px;line-height:1.6}.cleanup-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}@@media(max-width:800px){.cleanup-change{grid-template-columns:1fr}}</style>
 @endpush
 @section('content')
 <h1 class="h3">Report content cleanup</h1>
@@ -34,7 +34,7 @@
 <article class="panel">
 <div class="d-flex gap-3 align-items-start">
 @if(!$row['reason'] && count($row['changes']))<input class="cleanup-select mt-2" type="checkbox" name="ids[]" value="{{ $row['id'] }}" aria-label="Select report {{ $row['id'] }}">@endif
-<div><h3 class="cleanup-title mb-1">{{ $row['title'] }}</h3><div class="small text-muted">Report #{{ $row['id'] }} | {{ (int)$row['status']===1?'Published':'Draft / inactive' }}</div></div>
+<div class="cleanup-report-title"><h3 class="cleanup-title mb-1">{{ $row['title'] }}</h3><div class="small text-muted">Report #{{ $row['id'] }} | {{ (int)$row['status']===1?'Published':'Draft / inactive' }}</div></div>
 </div>
 <div class="cleanup-actions my-3"><a target="_blank" rel="noopener" href="{{ route('admin.edit',['reports',$row['id']]) }}">Open report editor</a>@if((int)$row['status']===1)<a target="_blank" rel="noopener" href="{{ route('rd_view',$row['slug']) }}">View website report</a>@endif</div>
 @if($row['reason'])<p class="mb-0 text-muted">{{ $row['reason'] }}</p>
