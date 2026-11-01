@@ -73,3 +73,8 @@ WHERE NOT EXISTS (SELECT 1 FROM `lr_migrations` WHERE `migration` = '2026_10_24_
 INSERT INTO `lr_migrations` (`migration`, `batch`)
 SELECT '2026_11_01_000001_expand_report_key_info', @ei_update_batch
 WHERE NOT EXISTS (SELECT 1 FROM `lr_migrations` WHERE `migration` = '2026_11_01_000001_expand_report_key_info');
+
+-- Category display correction: store plain text and let templates escape the ampersand once.
+UPDATE `categories` SET `name` = 'Chemicals & Advanced Materials', `updated_at` = CURRENT_TIMESTAMP
+WHERE `slug` = 'chemicals-materials'
+  AND `name` IN ('Chemicals &amp; Advanced Materials', 'Chemicals &amp;amp; Advanced Materials');
