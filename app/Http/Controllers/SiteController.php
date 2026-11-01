@@ -19,7 +19,7 @@ class SiteController extends Controller
 
     private function reports($category = null, $limit = 4)
     {
-        return self::catalogue()->leftJoin('reports_meta as m', 'm.report_id', '=', 'r.id')->addSelect(DB::raw('LEFT(m.content,250) as description'))->where('r.status', 1)->when($category, fn ($q) => $q->where('r.category_id', $category))->orderByDesc('r.pub_date')->limit($limit)->get()->all();
+        return self::catalogue()->leftJoin('reports_meta as m', 'm.report_id', '=', 'r.id')->addSelect(DB::raw('SUBSTR(m.content,1,250) as description'))->where('r.status', 1)->when($category, fn ($q) => $q->where('r.category_id', $category))->orderByDesc('r.pub_date')->limit($limit)->get()->all();
     }
 
     private function countries()
