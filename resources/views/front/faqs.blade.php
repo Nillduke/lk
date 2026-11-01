@@ -27,7 +27,7 @@
             <li class="list-unstyled font-weight-bold">1) What is Eternity Insights?</li><br>
             Eternity Insights is a one stop destination for all industrial, commercial and profitmaking ventures seeking the best research of the market of all the sectors. The company prides itself in being efficient in fulfilling market research requirements of international and domestic clients.<br>
             <li class="list-unstyled font-weight-bold"><br>2) Why use Eternity Insights?</li><br>
-            Eternity Insights offers accurate market analysis and research in the clientâ€™s sector of business. It has more than 18,000 research documents to support this claim. Experienced researchers and analysts with many years of work in their field of expertise work with us to provide the best analysis and reporting services in the industry.<br>
+            Eternity Insights offers accurate market analysis and research in the client’s sector of business. It has more than 18,000 research documents to support this claim. Experienced researchers and analysts with many years of work in their field of expertise work with us to provide the best analysis and reporting services in the industry.<br>
             <li class="list-unstyled font-weight-bold"><br>3) Who are our customers?</li><br>
             Eternity Insights has customers from almost every possible area of business activity. They include industrialists, entrepreneurs, organisations, executives and even students. Eternity Insights provides all of these with a detailed and accurate analysis of any specific market.
 

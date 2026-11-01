@@ -189,7 +189,7 @@ foreach ($key_playersArray as $kp1) { @endphp
     <li>Competitive landscape which incorporates the market ranking of the major players, along with new service/product launches, partnerships, business expansions and acquisitions in the past five years of companies profiled</li>
     <li>Extensive company profiles comprising of company overview, company insights, product benchmarking and SWOT analysis for the major market players</li>
     <li>The current as well as the future market outlook of the industry with respect to recent developments (which involve growth opportunities and drivers as well as challenges and restraints of both emerging as well as developed regions</li>
-    <li>Includes an in-depth analysis of the market of various perspectives through Porterâ€™s five forces analysis</li>
+    <li>Includes an in-depth analysis of the market of various perspectives through Porter’s five forces analysis</li>
     <li>Provides insight into the market through Value Chain</li>
     <li>Market dynamics scenario, along with growth opportunities of the market in the years to come</li>
 </ul>

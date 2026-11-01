@@ -66,7 +66,7 @@
                             <div class="membership_listing">
                                 <div class="text-center"><img src="/frontend/images/skilled-team.svg" width="30" height="30" alt="database"></div>
                                 <h3>Talent Pool</h3>
-                                <p>Our Research Team consists of skilled cross-functional project managers, SMEâ€™s, researchers, and analysts, who are meticulously detail oriented and proficient in executing and delivering complex research assignments.</p>
+                                <p>Our Research Team consists of skilled cross-functional project managers, SME’s, researchers, and analysts, who are meticulously detail oriented and proficient in executing and delivering complex research assignments.</p>
                             </div>
                         </div>
                     </div>

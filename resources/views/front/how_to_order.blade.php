@@ -27,7 +27,7 @@
             <div class="cmscont">
                 <h1>How To Order</h1><hr>                
                 <h5>Order and Delivery</h5>
-                <p>If you are placing an order on a companyâ€™s behalf, you should be authorized to make the purchase decision. You can place your order using following channels:</p>
+                <p>If you are placing an order on a company’s behalf, you should be authorized to make the purchase decision. You can place your order using following channels:</p>
 
                 <h6>Ordering by Email:</h6>
                 <p>Send all your requirements and questions to {{ config('site.sales_email') }} Remember to include all your details including billing & delivery address along with the preferred mode of payment. Our executives will get in touch with you within 1 business day.</p>
@@ -48,13 +48,13 @@
             <p>You can use the following methods of payment:</p>
             <ul>
                 <li>Credit Card <br>
-            â€“ We accept VISA, MasterCard, Maestro, Diners Club and American Express cards. On successful payment, an invoice will emailed to you.</li>
+            – We accept VISA, MasterCard, Maestro, Diners Club and American Express cards. On successful payment, an invoice will emailed to you.</li>
                 <li>
             PayPal<br>
-            â€“ National and international clients can choose PayPal to pay online.</li>
+            – National and international clients can choose PayPal to pay online.</li>
                 <li>
             Wire Transfer<br>
-            â€“ Once you have placed your order (online, post or fax) an invoice will be emailed to you for payment via wire transfer or company cheque.</li>
+            – Once you have placed your order (online, post or fax) an invoice will be emailed to you for payment via wire transfer or company cheque.</li>
             </ul>             
         </div>
     </div>
