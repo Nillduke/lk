@@ -105,7 +105,7 @@ class ReportFaqs
         if($trends==='') {
             $sections=[];
             foreach(['/\b(?:market drivers?|growth drivers?)\b/i','/\btrends?(?:\s*&\s*developments)?\b/i','/\b(?:market restraints?|key challenges?)\b/i'] as $pattern) {
-                $answer=$this->sectionAnswer($doc,$pattern);if($answer!=='')$sections[]=$answer;
+                $answer=$this->sectionAnswer($doc,$pattern);if($answer!=='')$sections[]=preg_match('/[.!?]$/u',$answer)?$answer:rtrim($answer,' ;:').'.';
             }
             $trends=implode(' ',array_unique($sections));
         }
