@@ -159,7 +159,7 @@ body.interior-site{
 /* Report details: editorial reading column with quiet navigation and purchase rail. */
 body.interior-site.page-report .report-hero{background:linear-gradient(108deg,#0e2055,#183875 70%,#2a4d8b);border-bottom:1px solid #243f78}
 body.interior-site.page-report .report-hero .site-breadcrumb,body.interior-site.page-report .report-hero .site-breadcrumb a,body.interior-site.page-report .report-hero .breadcrumb-item.active{color:#dbe7fa!important;font-family:var(--interior-body);font-size:12px}
-body.interior-site.page-report .report-title{font-family:var(--interior-body)!important;font-size:25px!important;font-weight:500!important;line-height:1.35!important;letter-spacing:0;max-height:5.4em;color:#fff!important}
+body.interior-site.page-report .report-title{font-family:var(--interior-body)!important;font-size:25px!important;font-weight:500!important;line-height:1.35!important;letter-spacing:0;max-height:none;overflow:visible;color:#fff!important}
 body.interior-site.page-report .report-title.is-expanded{max-height:none}
 body.interior-site.page-report .rd-details-contents{font-family:var(--interior-body);font-size:12px!important;line-height:1.8}
 body.interior-site.page-report .report-title-toggle{font-family:var(--interior-body);font-size:12px}
