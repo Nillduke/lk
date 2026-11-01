@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 
 Route::get('/', [Site::class, 'home'])->name('home');
+// Preserve known legacy links reported in Search Console.
+Route::redirect('/home', '/', 301);
+Route::redirect('/industry/chemical-material', '/industry/chemicals-materials', 301);
+Route::redirect('/report/automatic-milking-systems-ams-mark', '/report/automatic-milking-systems-ams-market', 301);
+
 Route::get('/amp', [Site::class, 'home'])->name('home_amp');
 foreach (['aboutus' => 'aboutus', 'services' => 'services', 'faqs' => 'faqs', 'how-to-order' => 'howToOrder', 'disclaimer' => 'disclaimer', 'terms-and-conditions' => 'termsConditions', 'refund-policy' => 'refundPolicy', 'privacy-policy' => 'privacyPolicy', 'contactus' => 'contactus', 'html-sitemap' => 'html_sitemap'] as $path => $name) {
     Route::get($path, [Site::class, 'page'])->name($name);

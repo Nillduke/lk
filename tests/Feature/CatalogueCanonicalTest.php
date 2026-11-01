@@ -19,4 +19,14 @@ class CatalogueCanonicalTest extends TestCase
             $this->assertStringContainsString('href="'.e('https://www.eternityinsights.com'.$expected).'"', $html);
         }
     }
+    public function test_known_legacy_search_urls_redirect_to_their_exact_replacements(): void
+    {
+        foreach ([
+            '/home' => '/',
+            '/industry/chemical-material' => '/industry/chemicals-materials',
+            '/report/automatic-milking-systems-ams-mark' => '/report/automatic-milking-systems-ams-market',
+        ] as $old => $current) {
+            $this->get($old)->assertStatus(301)->assertRedirect($current);
+        }
+    }
 }
