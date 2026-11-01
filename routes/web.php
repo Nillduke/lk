@@ -77,6 +77,9 @@ Route::prefix('authuser')->middleware(['auth', AdminAccess::class])->group(funct
     Route::post('manage/{resource}/{id}', [Admin::class, 'save'])->name('admin.update');
     Route::delete('manage/{resource}/{id}', [Admin::class, 'delete'])->name('admin.delete');
     Route::get('export/{resource}', [Admin::class, 'export'])->name('admin.export');
+    Route::get('reports/content-cleanup', [\App\Http\Controllers\ReportCleanupController::class, 'index'])->name('admin.cleanup.index');
+    Route::post('reports/content-cleanup/preview', [\App\Http\Controllers\ReportCleanupController::class, 'preview'])->middleware('throttle:20,1')->name('admin.cleanup.preview');
+    Route::post('reports/content-cleanup/apply', [\App\Http\Controllers\ReportCleanupController::class, 'apply'])->middleware('throttle:10,1')->name('admin.cleanup.apply');
     Route::get('reports/import', [Transfer::class, 'form'])->name('admin.import');
     Route::post('reports/import', [Transfer::class, 'import'])->name('import_reports');
     Route::get('reports/import/template', [Transfer::class, 'template'])->name('admin.template');
