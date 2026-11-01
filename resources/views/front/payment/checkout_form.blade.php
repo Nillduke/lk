@@ -1,6 +1,14 @@
 @extends('layout.default')
 @section('head_meta')
 <meta name="robots" content="noindex, nofollow" />
+<style>
+.checkout-payment-option{display:flex;align-items:center;gap:16px;width:100%;padding:20px;border:1px solid #dce4ef;border-radius:8px;background:#fff;color:#233653;cursor:pointer}
+.checkout-payment-option:has(input:checked){border-color:#213c80;background:#f5f7fc;box-shadow:0 0 0 1px #213c80}
+.checkout-payment-option input{flex:0 0 auto;margin:0;accent-color:#213c80}
+.checkout-payment-option .checkout-payment-logo{width:126px!important;height:29px!important;max-width:100%;object-fit:contain;margin-bottom:8px}
+.checkout-payment-option small{display:block;color:#5b6c82;font-size:13px;line-height:1.5;margin-top:5px}
+.checkout-bank-icon{width:32px;height:32px;flex:0 0 auto;color:#213c80}
+</style>
     
 @endsection
 @section('content')
@@ -79,16 +87,14 @@
                             </div>
                             <div class="billing-wraper">
                                 @php $ccaReady=app(\App\Services\CcavenueSettings::class)->ready(); $defaultPayment=$ccaReady?'CCAvenue':'Wire Transfer'; @endphp
-                                @if($ccaReady)<div class="row mb-3"><div class="col-12"><label class="payment-method d-flex align-items-center justify-content-center gap-3" style="cursor:pointer"><input type="radio" name="payment_mode" class="form-radio" value="CCAvenue" required @checked(old('payment_mode',$defaultPayment)==='CCAvenue')><span><img src="{{ asset('frontend/images/ccavenue-logo.png') }}" alt="CCAvenue" width="126" height="29" style="object-fit:contain;margin-bottom:8px"><br><small>Credit / debit cards and available online payment methods</small></span></label>@if(config('ccavenue.mode')==='test')<p class="small text-center text-muted">CCAvenue test mode</p>@endif</div></div>@endif
+                                @if($ccaReady)<div class="row mb-3"><div class="col-12"><label class="checkout-payment-option"><input type="radio" name="payment_mode" class="form-radio" value="CCAvenue" required @checked(old('payment_mode',$defaultPayment)==='CCAvenue')><span><img src="{{ asset('frontend/images/ccavenue-logo.png') }}" alt="CCAvenue" width="126" height="29" class="checkout-payment-logo"><small>Credit / debit cards and available online payment methods</small></span></label>@if(config('ccavenue.mode')==='test')<p class="small text-center text-muted">CCAvenue test mode</p>@endif</div></div>@endif
 
                                 <div class="row mb-4">
                                     <div class="col-12">
-                                        <label class="payment-method d-flex align-items-center justify-content-center gap-3" style="cursor:pointer">
+                                        <label class="checkout-payment-option">
                                             <input type="radio" name="payment_mode" class="form-radio" value="Wire Transfer" required @checked(old('payment_mode',$defaultPayment)==='Wire Transfer')>
-                                            <span class="btn btn-debcred">
-                                                <img src="/frontend/images/credit-debit.png" style="height:30px;" alt="eternity credit-debit" class="img-fluid">
-                                                Wire Transfer
-                                            </span>
+                                            <svg class="checkout-bank-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 9h18L12 3 3 9Zm2 3v6m7-6v6m7-6v6M3 21h18M3 18h18"/></svg>
+                                            <span><strong>Wire Transfer</strong><small>Submit your order and arrange payment with our team.</small></span>
                                         </label>
                                     </div>
                                 </div>
