@@ -1,4 +1,5 @@
 <div id="owl-demo" class="owl-carousel owl-theme client-logo">
+    @include('include.new-client-logos')
     <div class="item">
         <img src="/frontend/images/client-logo/djoglobal.png" alt="djoglobal" width="150" height="80">
     </div>

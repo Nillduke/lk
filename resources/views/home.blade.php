@@ -167,6 +167,7 @@
     <div class="row">
         <div class="col-md-12 col-sm-12 col-12 mt-5">
             <div class="owl-carousel owl-theme client-logo">
+                @include('include.new-client-logos')
                 <div class="item">
                         <img src="{{ url('frontend/images/client-logo/djoglobal.png') }}" alt="djoglobal" width="150" height="77" loading="lazy">
                 </div>

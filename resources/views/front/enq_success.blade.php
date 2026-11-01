@@ -124,6 +124,7 @@
             </div>
             <div class="col-12">
                 <div class="owl-carousel owl-theme client-logo">
+                    @include('include.new-client-logos')
                     <div class="item">
                         <img src="/frontend/images/client-logo/Client-Honeywell.png" alt="Honeywell" class="img-fluid">
                     </div>

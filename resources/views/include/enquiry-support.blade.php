@@ -26,6 +26,7 @@
                 </div>
 
 <section class="enquiry-client-section"><h3>Our Clients</h3><div class="enquiry-client-grid">
+@include('include.new-client-logos', ['clientLogoGrid' => true])
 @foreach(['Client-Honeywell.png'=>'Honeywell','Client-LG.png'=>'LG','Client-Philips.png'=>'Philips','Client-Evonik.png'=>'Evonik','intel.png'=>'Intel','Kodak.png'=>'Kodak'] as $image=>$client)
 <div><img src="{{ asset('frontend/images/client-logo/'.$image) }}" alt="{{ $client }}" loading="lazy"></div>
 @endforeach
