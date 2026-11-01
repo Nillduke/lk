@@ -203,6 +203,7 @@
                         <div class="flex-grow-1 ms-3">
                             <h1 class="report-title" id="report-page-title">{{ $report->title }}
                             </h1>
+                            <div class="title-toggle-slot"><button class="report-title-toggle" type="button" aria-controls="report-page-title" aria-expanded="false" hidden>Read full title <span aria-hidden="true">+</span></button></div>
                             <ul class="list-inline rd-info mt-3 mb-2">
                                 <li class="list-inline-item rd-details-contents">
                                     No of Pages: {{ $report->pages }}

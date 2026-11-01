@@ -74,7 +74,7 @@ $pageKind = match (true) {
     @yield('content')
     @if($isInterior)</div>@endif
     @include('include.footer')
-    <script src="{{ asset('frontend/js/site-design.js') }}?v=20261101-full-title" defer></script>
+    <script src="{{ asset('frontend/js/site-design.js') }}?v=20261024-perf1" defer></script>
     @if($isInterior)<script src="{{ asset('frontend/js/interior-design.js') }}?v=20261024-perf1" defer></script>@endif
     <script src="{{ asset('frontend/js/mobile-responsive.js') }}?v=20261024-no-banner" defer></script>
     @yield('footer_script')
