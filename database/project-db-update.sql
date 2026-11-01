@@ -49,7 +49,11 @@ ALTER TABLE `news`
  ADD INDEX IF NOT EXISTS `lr_news_slug_live_idx` (`slug`, `status`, `deleted_at`);
 
 -- The editor supports detailed segment/company lists exceeding the original 1,000-character column.
+-- Permit existing zero dates only for the table rebuild, then restore this connection's mode.
+SET @ei_original_sql_mode = @@SESSION.sql_mode;
+SET SESSION sql_mode = TRIM(BOTH ',' FROM REPLACE(REPLACE(CONCAT(',', @@SESSION.sql_mode, ','), ',NO_ZERO_DATE,', ','), ',NO_ZERO_IN_DATE,', ','));
 ALTER TABLE `reports` MODIFY `key_info` MEDIUMTEXT NULL;
+SET SESSION sql_mode = @ei_original_sql_mode;
 
 -- Record completed migrations without duplicating existing history.
 CREATE TABLE IF NOT EXISTS `lr_migrations` (
