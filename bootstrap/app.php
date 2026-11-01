@@ -15,10 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: ['192.88.134.0/23', '185.93.228.0/22', '66.248.200.0/22', '208.109.0.0/22', '2a02:fe80::/29']);
         $middleware->append(\App\Http\Middleware\OptimizeDelivery::class);
         $middleware->trimStrings(except: ['smtp_password']);
+        $middleware->validateCsrfTokens(except: ['payments/ccavenue/response/*','payments/ccavenue/cancel/*','payments/ccavenue/notify']);
         $middleware->encryptCookies(except: ['user_cookie_consent']);
         $middleware->redirectGuestsTo(fn () => route('login'));
         $middleware->redirectUsersTo(fn () => route('dashboard'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->dontFlash(['smtp_password','turnstile_secret','cf-turnstile-response']);
+        $exceptions->dontFlash(['smtp_password','turnstile_secret','cf-turnstile-response','access_code','working_key','api_access_code','api_working_key','encResp']);
     })->create();

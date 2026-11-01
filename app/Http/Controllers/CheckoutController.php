@@ -25,6 +25,7 @@ class CheckoutController extends Controller
             $checkout = DB::table('checkouts')->where('id', $id)->where('is_active', 1)->first();
             abort_unless($checkout, 404);
             $id = $checkout->report_id;
+            abort_if($checkout->payment_status === 'Success',409,'This order has already been paid.');
             $is_global = true;
         }
         $id = $id ?: session('chk_report');
@@ -40,14 +41,16 @@ class CheckoutController extends Controller
                 $license = $l;
             }
         }
-        session(['chk_report' => $id]);
+        if ($checkout) { foreach ($licenses as $l) if ((int)$l->id === (int)$checkout->report_license_id) $license=$l; }
+        session(['chk_report' => $id, 'checkout_source' => $checkout?->id]);
 
         return view('front.payment.checkout_form', ['title' => 'Checkout: Billing Details', 'id' => $id, 'checkout' => $checkout, 'report' => $report, 'licenses' => $licenses, 'license_type' => $checkout->license_type ?? $license->lic_name, 'license_price' => $checkout->amt_tobe_paid ?? $license->lic_price, 'license_id' => $license->id, 'single_user' => $licenses[0], 'is_global' => $is_global, 'countries' => DB::table('country')->get()->all()]);
     }
 
-    public function store(Request $request)
+    public function store(Request $request, \App\Services\CcavenueSettings $ccaSettings, \App\Services\CcavenueGateway $gateway)
     {
-        $data = $request->validate(['report_id' => 'required|integer|exists:reports,id', 'name' => 'required|string|max:100', 'email' => 'required|email|max:100', 'contact_no' => 'required|string|max:100', 'country' => 'required|string|max:100', 'company' => 'nullable|string|max:50', 'address' => 'nullable|string|max:500', 'message' => 'nullable|string|max:500', 'payment_mode' => 'required|in:PayPal,Wire Transfer,wire transfer']);
+        $data = $request->validate(['report_id' => 'required|integer|exists:reports,id', 'name' => 'required|string|max:100', 'email' => 'required|email|max:100', 'contact_no' => 'required|string|max:100', 'country' => 'required|string|max:100', 'company' => 'nullable|string|max:50', 'address' => 'nullable|string|max:500', 'message' => 'nullable|string|max:500', 'payment_mode' => 'required|in:CCAvenue,PayPal,Wire Transfer,wire transfer', 'remember'=>'accepted']);
+        abort_unless(DB::table('reports')->where('id',$data['report_id'])->where('status',1)->exists(),422,'This report is not available.');
         $q = DB::table('reports_licenses')->where('report_id', $data['report_id']);
         $licenseName = explode(':', (string) $request->input('license'))[0];
         $license = $request->filled('report_lic_id') ? (clone $q)->where('id', $request->report_lic_id)->first() : (clone $q)->where('lic_name', $licenseName)->first();
@@ -55,19 +58,25 @@ class CheckoutController extends Controller
         if (strtolower($data['payment_mode']) === 'paypal' && ! config('site.paypal.enabled')) {
             return back()->withInput()->withErrors(['payment_mode' => 'PayPal is not configured. Select Wire Transfer or configure PayPal in .env.']);
         }
+        if ($data['payment_mode'] === 'CCAvenue' && !$ccaSettings->ready()) return back()->withInput()->withErrors(['payment_mode'=>'CCAvenue is not available. Please select another payment method.']);
+        $source = session('checkout_source') ? DB::table('checkouts')->where('id',session('checkout_source'))->where('is_active',1)->where('report_id',$data['report_id'])->where('report_license_id',$license->id)->where('payment_status','!=','Success')->first() : null;
+        $amount = $source ? $source->amt_tobe_paid : $license->lic_price;
+        abort_unless(\App\Services\CcavenueGateway::money($amount)>0 && (!$source || $source->currency==='USD'),422,'A valid USD price is required.');
         $order = 'ORD'.now()->format('YmdHis').Str::upper(Str::random(6));
-        $payment = strtolower($data['payment_mode']) === 'paypal' ? 'PayPal' : 'Wire Transfer';
-        unset($data['payment_mode']);
-        $row = $data + ['uuid' => (string) Str::uuid(), 'report_license_id' => $license->id, 'order_number' => $order, 'license_type' => $license->lic_name, 'total_amount' => $license->lic_price, 'amt_tobe_paid' => $license->lic_price, 'currency' => config('site.paypal.currency'), 'payment_by' => $payment, 'payment_status' => 'Pending', 'status' => '1', 'is_active' => 1, 'created_at' => now(), 'updated_at' => now()];
-        $checkoutId = DB::transaction(function () use ($row) {
+        $payment = $data['payment_mode']==='CCAvenue' ? 'CCAvenue' : (strtolower($data['payment_mode']) === 'paypal' ? 'PayPal' : 'Wire Transfer');
+        unset($data['payment_mode'], $data['remember']);
+        $row = $data + ['uuid' => (string) Str::uuid(), 'report_license_id' => $license->id, 'order_number' => $order, 'license_type' => $license->lic_name, 'total_amount' => $license->lic_price, 'amt_tobe_paid' => $amount, 'currency' => 'USD', 'payment_by' => $payment, 'payment_status' => 'Pending', 'status' => '1', 'is_active' => 1, 'created_at' => now(), 'updated_at' => now()];
+        $checkoutId = DB::transaction(function () use ($row, $payment, $gateway) {
             $row['checkout_id'] = DB::table('checkouts')->lockForUpdate()->max('checkout_id') + 1;
 
-            return DB::table('checkouts')->insertGetId($row);
+            $id = DB::table('checkouts')->insertGetId($row);
+            if ($payment==='CCAvenue') $gateway->create((object)($row+['id'=>$id]));
+            return $id;
         });
         session(['order_number' => $order, 'checkout_id' => $checkoutId]);
         SiteController::notify(config('site.admin_email'), 'New checkout attempt', $order.' - '.$data['email'], true);
 
-        return redirect()->route($payment === 'PayPal' ? 'paypal_redirect' : 'wt_success');
+        return redirect()->route($payment==='CCAvenue' ? 'ccavenue.redirect' : ($payment === 'PayPal' ? 'paypal_redirect' : 'wt_success'));
     }
 
     private function paypal()

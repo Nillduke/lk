@@ -43,6 +43,11 @@ Route::get('checkout-form/{id}', [Checkout::class, 'form'])->whereNumber('id')->
 Route::get('checkout/{id}', [Checkout::class, 'form'])->whereNumber('id')->name('checkout_form1');
 Route::get('checkout', [Checkout::class, 'form'])->name('checkout_form');
 Route::post('checkoutprocess', [Checkout::class, 'store'])->middleware('throttle:15,1')->name('checkoutFormProcess');
+Route::get('payments/ccavenue/redirect', [\App\Http\Controllers\CcavenueController::class, 'redirect'])->name('ccavenue.redirect');
+Route::post('payments/ccavenue/notify', [\App\Http\Controllers\CcavenueController::class, 'notify'])->middleware('throttle:60,1')->name('ccavenue.notify');
+Route::post('payments/ccavenue/response/{attempt}', [\App\Http\Controllers\CcavenueController::class, 'response'])->whereUuid('attempt')->middleware('throttle:60,1')->name('ccavenue.response');
+Route::match(['get','post'], 'payments/ccavenue/cancel/{attempt}', [\App\Http\Controllers\CcavenueController::class, 'response'])->whereUuid('attempt')->middleware('throttle:60,1')->name('ccavenue.cancel');
+Route::get('payments/ccavenue/result/{attempt}', [\App\Http\Controllers\CcavenueController::class, 'result'])->whereUuid('attempt')->middleware('signed')->name('ccavenue.result');
 Route::get('paypal/redirecting', [Checkout::class, 'paypalRedirect'])->name('paypal_redirect');
 Route::get('paypal/success', [Checkout::class, 'paypalSuccess'])->name('paypal_success');
 Route::get('paypal/cancel', [Checkout::class, 'result'])->name('paypal_cancle');
@@ -65,6 +70,10 @@ Route::post('authuser/logout', [Auth::class, 'logout'])->middleware('auth')->nam
 Route::get('authuser/logout', [Auth::class, 'logout'])->middleware('auth')->name('logout');
 Route::prefix('authuser')->middleware(['auth', AdminAccess::class])->group(function () {
     Route::get('dashboard', [Admin::class, 'dashboard'])->name('dashboard');
+    Route::get('settings/payments', [\App\Http\Controllers\CcavenueController::class,'settings'])->name('admin.ccavenue.edit');
+    Route::post('settings/payments', [\App\Http\Controllers\CcavenueController::class,'saveSettings'])->middleware('throttle:10,1')->name('admin.ccavenue.update');
+    Route::get('payments/ccavenue', [\App\Http\Controllers\CcavenueController::class,'payments'])->name('admin.ccavenue.payments');
+    Route::post('payments/ccavenue/{attempt}/recheck', [\App\Http\Controllers\CcavenueController::class,'recheck'])->whereUuid('attempt')->middleware('throttle:10,1')->name('admin.ccavenue.recheck');
     Route::get('settings/forms', [\App\Http\Controllers\FormProtectionController::class, 'edit'])->name('admin.forms.edit');
     Route::post('settings/forms', [\App\Http\Controllers\FormProtectionController::class, 'update'])->middleware('throttle:10,1')->name('admin.forms.update');
     Route::get('settings/email', [\App\Http\Controllers\EmailSettingsController::class, 'edit'])->name('admin.email.edit');

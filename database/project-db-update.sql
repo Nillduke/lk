@@ -91,3 +91,22 @@ CREATE TABLE IF NOT EXISTS `lr_report_faqs` (
 INSERT INTO `lr_migrations` (`migration`, `batch`)
 SELECT '2026_11_01_000002_add_report_faq_overrides', @ei_update_batch
 WHERE NOT EXISTS (SELECT 1 FROM `lr_migrations` WHERE `migration` = '2026_11_01_000002_add_report_faq_overrides');
+
+-- CCAvenue hosted checkout and auditable, encrypted payment attempts (2026-11-01).
+SET @ei_payment_sql_mode = @@SESSION.sql_mode;
+SET SESSION sql_mode = TRIM(BOTH ',' FROM REPLACE(REPLACE(CONCAT(',', @@SESSION.sql_mode, ','), ',NO_ZERO_DATE,', ','), ',NO_ZERO_IN_DATE,', ','));
+ALTER TABLE `checkouts` MODIFY `payment_by` ENUM('PayPal','Wire Transfer','CCAvenue') NOT NULL;
+SET SESSION sql_mode = @ei_payment_sql_mode;
+CREATE TABLE IF NOT EXISTS `lr_payment_attempts` (
+ `id` char(36) NOT NULL, `checkout_id` int unsigned NOT NULL, `order_number` varchar(50) NOT NULL,
+ `mode` varchar(10) NOT NULL, `credentials` longtext NOT NULL, `nonce` varchar(48) NOT NULL,
+ `status` varchar(30) NOT NULL, `amount` decimal(10,2) NOT NULL, `currency` varchar(10) NOT NULL,
+ `tracking_id` varchar(50) NULL, `response` text NULL, `note` varchar(255) NULL,
+ `verified_at` timestamp NULL, `created_at` timestamp NULL, `updated_at` timestamp NULL,
+ PRIMARY KEY (`id`), KEY `lr_payment_attempts_checkout_id_index` (`checkout_id`),
+ KEY `lr_payment_attempts_order_number_index` (`order_number`),
+ KEY `lr_payment_attempts_status_index` (`status`), KEY `lr_payment_attempts_tracking_id_index` (`tracking_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `lr_migrations` (`migration`, `batch`)
+SELECT '2026_11_01_000003_add_ccavenue_payments', @ei_update_batch
+WHERE NOT EXISTS (SELECT 1 FROM `lr_migrations` WHERE `migration` = '2026_11_01_000003_add_ccavenue_payments');

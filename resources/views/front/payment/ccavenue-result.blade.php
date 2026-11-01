@@ -1,0 +1,3 @@
+@extends('layout.default')
+@section('head_meta')<meta name="robots" content="noindex,nofollow">@endsection
+@section('content')<div class="container py-5"><h1>{{ $title }}</h1><p>{{ $message }}</p><p>Order: <strong>{{ $row->order_number }}</strong></p><p>{{ $row->currency }} {{ number_format((float)$row->amount,2) }}</p>@if($row->mode==='test')<p class="alert alert-info">Test transaction. This does not represent a live payment.</p>@endif<p>For assistance: <a href="mailto:{{ config('site.sales_email')?:config('site.admin_email') }}">{{ config('site.sales_email')?:config('site.admin_email') }}</a></p><a href="{{ route('home') }}" class="btn btn-primary">Return to website</a></div>@endsection

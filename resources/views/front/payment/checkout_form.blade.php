@@ -50,19 +50,19 @@
                                             <td>{{ $report->id }}</td>
                                             <td>
                                                 <select id="ddl_lice_type" class="form-select"
-                                                    style="height: 36px;width: 85%;" name="license" 
+                                                    style="height: 36px;width: 85%;" name="report_lic_id"
                                                     {{ ($is_global) ? 'disabled=""' : '' }}>
                                                 @php
                                                 foreach ($licenses as $key => $value) { @endphp
                                                     
-                                                    <option value="{{ $value->lic_name.':'.$value->lic_price }}" @php if($license_type == $value->lic_name){@endphp selected="" @php }@endphp >
+                                                    <option value="{{ $value->id }}" data-price="{{ $value->lic_price }}" @php if($license_type == $value->lic_name){@endphp selected="" @php }@endphp >
                                                 {{ $value->lic_name.' - '.$value->lic_price }}
                                             </option>
 
                                                 @php } @endphp                                                
                                                 </select>
                                                 @php if($is_global){@endphp
-                                                    <input type="hidden" name="license" value="{{ $checkout->license_type.':'.$checkout->amt_tobe_paid }}">
+                                                    <input type="hidden" name="report_lic_id" value="{{ $checkout->report_license_id }}">
                                                 @php } @endphp                                                
                                             </td>
                                             <td>$ <span class="lice_price">{{ $license_price }}</span> </td>
@@ -78,20 +78,13 @@
                                 <h2 class="req-sample-about mb-0">Continue For Payment Method</h2>
                             </div>
                             <div class="billing-wraper">
-                                <!-- <div class="row mb-3">
-                                    <div class="col-12">
-                                        <div class="payment-method text-center">
-                                            <input type="radio" name="payment" class="form-radio" checked>
-                                            <button class="btn btn-ccavenue">
-                                                <img src="/frontend/images/cc_avenue.png" height="70" alt="eternity ccavenue" class="img-fluid">
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div> -->
+                                @php $ccaReady=app(\App\Services\CcavenueSettings::class)->ready(); $defaultPayment=$ccaReady?'CCAvenue':(config('site.paypal.enabled')?'PayPal':'Wire Transfer'); @endphp
+                                @if($ccaReady)<div class="row mb-3"><div class="col-12"><label class="payment-method d-flex align-items-center justify-content-center gap-3" style="cursor:pointer"><input type="radio" name="payment_mode" class="form-radio" value="CCAvenue" @checked(old('payment_mode',$defaultPayment)==='CCAvenue')><span><strong>CCAvenue</strong><br><small>Credit / debit cards and available online payment methods</small></span></label>@if(config('ccavenue.mode')==='test')<p class="small text-center text-muted">CCAvenue test mode</p>@endif</div></div>@endif
+
                                 <div class="row mb-3">
                                     <div class="col-12">
                                         <div class="payment-method text-center">
-                                            <input type="radio" name="payment_mode" class="form-radio" value="PayPal" @checked(config('site.paypal.enabled')) @disabled(!config('site.paypal.enabled'))>
+                                            <input type="radio" name="payment_mode" class="form-radio" value="PayPal" @checked(old('payment_mode',$defaultPayment)==='PayPal') @disabled(!config('site.paypal.enabled'))>
                                             <button type="button" class="btn btn-paypal">
                                                 <img src="/frontend/images/paypal.png" style="height:30px;" alt="eternity paypal" class="img-fluid">
                                             </button>
@@ -101,7 +94,7 @@
                                 <div class="row mb-4">
                                     <div class="col-12">
                                         <div class="payment-method text-center">
-                                            <input type="radio" name="payment_mode" class="form-radio" value="Wire Transfer" @checked(!config('site.paypal.enabled'))>
+                                            <input type="radio" name="payment_mode" class="form-radio" value="Wire Transfer" @checked(old('payment_mode',$defaultPayment)==='Wire Transfer')>
                                             <button type="button" class="btn btn-debcred">
                                                 <img src="/frontend/images/credit-debit.png" style="height:30px;" alt="eternity credit-debit" class="img-fluid">
                                                 Wire Transfer
@@ -179,7 +172,7 @@
                                 <div class="form-row">
                                     <div class="col">
                                         <input type="hidden" id="amtotpay" name="amt_tobe_paid" value="{{ $license_price }}" />
-                                        <button class="btn btn-request-submit" name="Submit">Submit</button>
+                                        <button class="btn btn-request-submit" name="Submit">Continue to payment</button>
                                     </div>
                                 </div>
                             <!-- </form> -->
@@ -195,7 +188,7 @@
     $(document).ready(function() { 
         //console.log('Test');
         $('#ddl_lice_type').on('change', function() {
-            var pr = this.value.split(':')[1];
+            var pr = this.selectedOptions[0].dataset.price;
             $(".lice_price").html(pr);
             $("#amtotpay").val(pr);           
         });
