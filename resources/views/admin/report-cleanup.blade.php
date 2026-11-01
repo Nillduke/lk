@@ -16,9 +16,9 @@
 <div class="col-12"><label for="cleanup_search">Report name (optional)</label><input id="cleanup_search" name="search" class="form-control" maxlength="150" value="{{ $filters['search']??'' }}" placeholder="For example: Automotive Active Safety"></div>
 </div>
 <label class="d-block"><input type="hidden" name="sentences" value="0"><input type="checkbox" name="sentences" value="1" @checked($filters['sentences']??true)> Remove generic COVID-19 coverage sentences</label>
-<p class="small text-muted">For example: ?The report also considers the impact of COVID-19 on the global ? Market.? Historical analysis is left for manual review.</p>
+<p class="small text-muted">For example: &quot;The report also considers the impact of COVID-19 on the global [name] Market.&quot; Historical analysis is left for manual review.</p>
 <label class="d-block"><input type="hidden" name="toc" value="0"><input type="checkbox" name="toc" value="1" @checked($filters['toc']??true)> Update old COVID-specific table-of-contents headings</label>
-<p class="small text-muted">Replace the standard COVID impact and pre/post-COVID headings with ?Market Landscape and Industry Developments? and ?Current Market Trends and Outlook.? Keep section numbering.</p>
+<p class="small text-muted">Replace the standard COVID impact and pre/post-COVID headings with &quot;Market Landscape and Industry Developments&quot; and &quot;Current Market Trends and Outlook.&quot; Keep section numbering.</p>
 <div class="cleanup-actions mt-3">
 @if(($filters['after']??0)>0)<button class="btn btn-primary" name="after" value="{{ $filters['after'] }}">Preview next batch</button>@endif
 <button class="btn {{ ($filters['after']??0)>0?'btn-outline-primary':'btn-primary' }}" name="after" value="0">{{ ($filters['after']??0)>0?'Preview from beginning':'Preview reports' }}</button>
@@ -34,7 +34,7 @@
 <article class="panel">
 <div class="d-flex gap-3 align-items-start">
 @if(!$row['reason'] && count($row['changes']))<input class="cleanup-select mt-2" type="checkbox" name="ids[]" value="{{ $row['id'] }}" aria-label="Select report {{ $row['id'] }}">@endif
-<div><h3 class="cleanup-title mb-1">{{ $row['title'] }}</h3><div class="small text-muted">Report #{{ $row['id'] }} ? {{ (int)$row['status']===1?'Published':'Draft / inactive' }}</div></div>
+<div><h3 class="cleanup-title mb-1">{{ $row['title'] }}</h3><div class="small text-muted">Report #{{ $row['id'] }} | {{ (int)$row['status']===1?'Published':'Draft / inactive' }}</div></div>
 </div>
 <div class="cleanup-actions my-3"><a target="_blank" rel="noopener" href="{{ route('admin.edit',['reports',$row['id']]) }}">Open report editor</a>@if((int)$row['status']===1)<a target="_blank" rel="noopener" href="{{ route('rd_view',$row['slug']) }}">View website report</a>@endif</div>
 @if($row['reason'])<p class="mb-0 text-muted">{{ $row['reason'] }}</p>
@@ -47,7 +47,7 @@
 @endforeach
 @if($row['remaining'])<p class="small text-muted mb-0">Other COVID-related references remain for individual review.</p>@endif
 @endif
-@if(($row['reason'] || !count($row['changes'])) && $row['reference'])<details class="mt-3"><summary>View matching text</summary><p class="mt-2 text-muted">?{{ $row['reference'] }}?</p></details>@endif
+@if(($row['reason'] || !count($row['changes'])) && $row['reference'])<details class="mt-3"><summary>View matching text</summary><p class="mt-2 text-muted">...{{ $row['reference'] }}...</p></details>@endif
 </article>
 @empty<div class="panel">No matching reports in this search range. {{ $batch['more']?'Choose Preview next batch to continue.':'Try a different report name, industry, or status.' }}</div>@endforelse
 @if(count($batch['rows']))<div class="panel cleanup-actions"><button id="cleanup-apply-button" class="btn btn-primary" disabled>Apply to selected reports</button><span class="small text-muted">Preview expires after 20 minutes. Reports edited after preview will be skipped.</span></div>@endif
@@ -56,5 +56,5 @@
 @endif
 @endsection
 @push('scripts')
-<script>(()=>{const boxes=[...document.querySelectorAll('.cleanup-select')],all=document.querySelector('#cleanup-select-all'),button=document.querySelector('#cleanup-apply-button'),count=document.querySelector('#cleanup-selected-count');const update=()=>{const selected=boxes.filter(b=>b.checked).length;if(button)button.disabled=!selected;if(count)count.textContent=selected+' selected';if(all){all.checked=boxes.length>0&&selected===boxes.length;all.indeterminate=selected>0&&selected<boxes.length;}};boxes.forEach(b=>b.addEventListener('change',update));all?.addEventListener('change',()=>{boxes.forEach(b=>b.checked=all.checked);update();});document.querySelector('#cleanup-apply')?.addEventListener('submit',e=>{if(!boxes.some(b=>b.checked)){e.preventDefault();return;}if(button){button.disabled=true;button.textContent='Applying selected changes?';}});update();})();</script>
+<script>(()=>{const boxes=[...document.querySelectorAll('.cleanup-select')],all=document.querySelector('#cleanup-select-all'),button=document.querySelector('#cleanup-apply-button'),count=document.querySelector('#cleanup-selected-count');const update=()=>{const selected=boxes.filter(b=>b.checked).length;if(button)button.disabled=!selected;if(count)count.textContent=selected+' selected';if(all){all.checked=boxes.length>0&&selected===boxes.length;all.indeterminate=selected>0&&selected<boxes.length;}};boxes.forEach(b=>b.addEventListener('change',update));all?.addEventListener('change',()=>{boxes.forEach(b=>b.checked=all.checked);update();});document.querySelector('#cleanup-apply')?.addEventListener('submit',e=>{if(!boxes.some(b=>b.checked)){e.preventDefault();return;}if(button){button.disabled=true;button.textContent='Applying selected changes...';}});update();})();</script>
 @endpush

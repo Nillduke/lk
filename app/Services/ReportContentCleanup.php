@@ -18,11 +18,14 @@ class ReportContentCleanup
     {
         $changes = [];
         $replace = function ($pattern, $replacement) use (&$value, &$changes, $field) {
-            $value = preg_replace_callback($pattern, function ($m) use (&$changes, $replacement, $field) {
+            $previousCount = count($changes);
+            $next = preg_replace_callback($pattern, function ($m) use (&$changes, $replacement, $field) {
                 $after = is_callable($replacement) ? $replacement($m) : $replacement;
                 $changes[] = ['field' => $field, 'before' => $m[0], 'after' => $after];
                 return $after;
             }, $value);
+            if ($next === null) { $changes = array_slice($changes, 0, $previousCount); return; }
+            $value = $next;
         };
         // Only self-contained generic coverage sentences; never remove analytical paragraphs.
         if ($options['sentences'] ?? false) {
@@ -57,7 +60,7 @@ class ReportContentCleanup
     public function plan(array $source, array $options): array
     {
         $r = $source['report']; $m = $source['meta'];
-        $reason = $this->protectedSubject($r->title) ? 'COVID / pandemic is part of this report?s subject. Edit relevant content manually.' : $source['reason'];
+        $reason = $this->protectedSubject($r->title) ? 'COVID / pandemic is part of the report subject. Edit relevant content manually.' : $source['reason'];
         $updates = ['reports' => [], 'reports_meta' => []]; $changes = [];
         if (!$reason) {
             foreach (['reports' => [$r, self::REPORT_FIELDS], 'reports_meta' => [$m, self::META_FIELDS]] as $table => [$record, $fields]) {
@@ -72,6 +75,7 @@ class ReportContentCleanup
                 }
             }
         }
+        if (count($changes) > 100) { $reason = 'Many repeated passages: review this report individually in the editor.'; $changes = []; $updates = ['reports' => [], 'reports_meta' => []]; }
         $reference = null;
         foreach (array_merge((array)$r, (array)$m) as $value) {
             $text = html_entity_decode(strip_tags((string)$value), ENT_QUOTES | ENT_HTML5, 'UTF-8');
@@ -109,7 +113,11 @@ class ReportContentCleanup
         $shown = $matches->take($filters['batch_size']);
         $rows = [];
         foreach ($shown as $id) {
-            if ($source = $this->load($id)) $rows[] = $this->plan($source, $filters);
+            if ($source = $this->load($id)) {
+                $plan = $this->plan($source, $filters);
+                unset($plan['updates']);
+                $rows[] = $plan;
+            }
         }
         return ['rows' => $rows, 'after' => $overflow ? (int)$shown->last() : (int)$ids->last(), 'more' => $overflow || $ids->count() === 200, 'scanned' => $ids->count()];
     }

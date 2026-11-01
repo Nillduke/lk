@@ -74,7 +74,7 @@ class ReportContentCleanupTest extends TestCase
     }
     public function test_subject_reports_are_protected_and_arbitrary_ids_rejected(): void
     {
-        $this->seedReport(1,'COVID-19 Diagnostics Market');$this->seedReport(2);$this->preview()->assertOk()->assertSee('part of this report');
+        $this->seedReport(1,'COVID-19 Diagnostics Market');$this->seedReport(2);$this->preview()->assertOk()->assertSee('part of the report subject');
         $token=session('report_cleanup_preview.token');
         $this->post($this->path.'/apply',['token'=>$token,'ids'=>[1]])->assertUnprocessable();
         $this->post($this->path.'/apply',['token'=>$token,'ids'=>[999]])->assertUnprocessable();
