@@ -12,7 +12,14 @@ class ReportGraphicController extends Controller
         $report=DB::table('reports as r')->leftJoin('reports_meta as m','m.report_id','=','r.id')
             ->where('r.id',$id)->where('r.status',1)->first(['r.id','r.slug','r.keyword','r.title','m.content']);
         abort_unless($report,404);
-        $source=$graphics->sources($report)[$kind] ?? null;
+        $key=$request->query('source');
+        abort_if($key !== null && (!is_string($key) || !preg_match('/^[a-f0-9]{20}$/D',$key)),404);
+        $source=null;
+        foreach ($graphics->entries($report) as $entry) {
+            if ($entry['kind']===$kind && ($key===null || hash_equals($entry['key'],$key))) {
+                $source=$entry['source']; break;
+            }
+        }
         abort_unless($source,404);
         $svg=$graphics->render($kind,$source,$report->keyword ?: preg_replace('/\s+market.*$/i','',$report->title));
         abort_unless($svg,404);

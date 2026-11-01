@@ -28,22 +28,38 @@ class ReportGraphics
         return null;
     }
 
+    public function entries(object $report): array
+    {
+        $entries = [];
+        preg_match_all('~<img\b[^>]*\bsrc\s*=\s*([\'\"])(.*?)\1~is', $report->content ?? '', $matches);
+        foreach ($matches[2] as $source) {
+            if ($kind = $this->kind($source, $report)) {
+                $entries[] = ['kind'=>$kind,'source'=>$source,'key'=>$this->sourceKey($source)];
+            }
+        }
+        return $entries;
+    }
+
+    public function sourceKey(string $source): string
+    {
+        return substr(hash('sha256', html_entity_decode($source, ENT_QUOTES | ENT_HTML5, 'UTF-8')), 0, 20);
+    }
+
     public function sources(object $report): array
     {
         $sources = [];
-        preg_match_all('~<img\b[^>]*\bsrc\s*=\s*([\'\"])(.*?)\1~is', $report->content ?? '', $matches);
-        foreach ($matches[2] as $source) if ($kind = $this->kind($source, $report)) $sources[$kind] ??= $source;
+        foreach ($this->entries($report) as $entry) $sources[$entry['kind']] ??= $entry['source'];
         return $sources;
     }
 
     public function content(object $report): string
     {
-        $version = substr(hash('sha256', json_encode(config('report_graphics')).'v2'.($report->content ?? '')), 0, 16);
+        $version = substr(hash('sha256', json_encode(config('report_graphics')).'v3'.($report->content ?? '')), 0, 16);
         $html = preg_replace_callback('~<img\b[^>]*>~is', function ($m) use ($report, $version) {
             return preg_replace_callback('~\bsrc\s*=\s*([\'\"])(.*?)\1~is', function ($src) use ($report, $version) {
                 $kind = $this->kind($src[2], $report);
                 if (!$kind) return $src[0];
-                return 'src='.$src[1].e(route('report_graphic', ['id'=>$report->id,'kind'=>$kind], false).'?v='.$version).$src[1];
+                return 'src='.$src[1].e(route('report_graphic', ['id'=>$report->id,'kind'=>$kind,'source'=>$this->sourceKey($src[2])], false).'&v='.$version).$src[1];
             }, $m[0], 1);
         }, $report->content ?? '');
         // Synchronize the standard graph heading; historical research prose stays intact.

@@ -95,4 +95,29 @@ class ReportGraphicsTest extends TestCase
             if($generated['created']) {unlink($generated['created']);rmdir(dirname($generated['created']));}
         }
     }
+    public function test_five_images_keep_distinct_sources_including_two_taxonomy_graphics(): void
+    {
+        $generator=app(ReportContentGenerator::class); $g=app(ReportGraphics::class);
+        $first=$generator->image(987654322,'First saved graphic',['types'=>'First segment','applications'=>'First use']);
+        $second=$generator->image(987654322,'Second saved graphic',['types'=>'Second segment','applications'=>'Second use']);
+        try {
+            $html='<p>Original introduction</p><img src="/frontend/images/market-size.svg"><img src="'.$first['url'].'"><p>Keep this paragraph here.</p><img src="/frontend/images/region-2.svg"><img src="'.$second['url'].'"><img src="/uploads/images/custom-photo.png">';
+            $r=(object)['id'=>987654322,'slug'=>'five-image-test','keyword'=>'Five images','content'=>$html];
+            DB::table('reports')->insert(['id'=>$r->id,'slug'=>$r->slug,'keyword'=>$r->keyword,'title'=>'Five images Market','status'=>1]);
+            DB::table('reports_meta')->insert(['report_id'=>$r->id,'content'=>$html]);
+            $out=$g->content($r);$this->assertSame(5,substr_count($out,'<img'));
+            $this->assertStringContainsString('<p>Keep this paragraph here.</p>',$out);
+            $this->assertStringContainsString('src="/uploads/images/custom-photo.png"',$out);
+            preg_match_all('~src="([^\"]+)"~',$out,$matches);
+            $this->assertNotSame($matches[1][1],$matches[1][3]);
+            $this->get(html_entity_decode($matches[1][1]))->assertOk()->assertSee('First saved graphic',false)->assertDontSee('Second saved graphic',false);
+            $this->get(html_entity_decode($matches[1][3]))->assertOk()->assertSee('Second saved graphic',false)->assertDontSee('First saved graphic',false);
+            $this->get('/report-graphics/'.$r->id.'/taxonomy.svg?source='.str_repeat('0',20))->assertNotFound();
+            $this->get('/report-graphics/'.$r->id.'/taxonomy.svg?source[]=invalid')->assertNotFound();
+        } finally {
+            foreach ([$first,$second] as $image) if ($image['created']) unlink($image['created']);
+            $dir=public_path('uploads/images/reports/987654322');if(is_dir($dir) && count(scandir($dir))===2)rmdir($dir);
+        }
+    }
+
 }

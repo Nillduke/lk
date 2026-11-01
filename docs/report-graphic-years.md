@@ -19,3 +19,5 @@ The read-only image endpoint only serves active reports and sources already refe
 ## Catalogue audit (2026-11-01)
 
 Read-only audit of 85,197 active reports found 82,188 with the three standard image references and 3,009 exceptions. 346 reports have no saved content. References are checked in stored HTML; this does not establish that every referenced legacy file exists. The exception list was exported separately for editorial review; no missing charts or research content were inserted.
+
+Each recognized image URL includes a source fingerprint. Reports with multiple graphics of the same kind retain their separate files and positions; requests can only select sources already saved on the active report. Custom images are preserved. A five-image fixture verifies that different taxonomy files are not replaced by the first file.
