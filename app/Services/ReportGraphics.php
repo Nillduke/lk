@@ -42,8 +42,9 @@ class ReportGraphics
                 return 'src='.$src[1].e(route('report_graphic', ['id'=>$report->id,'kind'=>$kind], false).'?v='.$version).$src[1];
             }, $m[0], 1);
         }, $report->content ?? '');
-        // Only the legacy template's graph heading; historical research prose stays intact.
-        return preg_replace_callback('~<h2\b[^>]*>[^<]*\bMarket Size,\s*2018\s*[-\x{2013}]\s*2028[^<]*</h2>~iu', fn ($m) => preg_replace('/2018\s*[-\x{2013}]\s*2028/u', $this->period()['range'], $m[0]), $html);
+        // Synchronize the standard graph heading; historical research prose stays intact.
+        if (!isset($this->sources($report)['size'])) return $html;
+        return preg_replace_callback('~<h2\b[^>]*>[^<]*\bMarket Size,\s*20\d{2}\s*[-\x{2013}]\s*20\d{2}[^<]*</h2>~iu', fn ($m) => preg_replace('/20\d{2}\s*[-\x{2013}]\s*20\d{2}/u', $this->period()['range'], $m[0]), $html);
     }
 
     public function read(string $source): ?string
