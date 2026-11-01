@@ -70,7 +70,10 @@ return view('admin.dashboard', compact('counts'));
             })]);
         }
 
-        return view('admin.index', compact('def', 'rows'));
+        $enquiryReports = $resource === 'enquiries'
+            ? DB::table('reports')->whereIn('id', $rows->getCollection()->pluck('report_id')->filter()->unique())->get(['id', 'title', 'slug'])->keyBy('id')
+            : collect();
+        return view('admin.index', compact('def', 'rows', 'enquiryReports'));
     }
 
     private function find($def, $id)
