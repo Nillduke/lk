@@ -35,6 +35,9 @@ class ReportGraphicsTest extends TestCase
         $this->assertSame(['size','region','taxonomy'],array_keys($g->sources($r)));
         $this->assertNull($g->kind('/uploads/images/../example-market.svg',$r));
         $this->assertNull($g->read('/../../.env'));
+        $legacy=(object)['id'=>11240,'slug'=>'global-cold-forming-foil-market','keyword'=>'Cold Forming Foil'];
+        $this->assertSame('taxonomy',$g->kind('https://eternityinsights.com/uploads/images/cold-forming-foil.svg',$legacy));
+        $this->assertNull($g->kind('https://external.example/uploads/images/cold-forming-foil.svg',$legacy));
         $r->content=str_replace('2018-2028','2021-2035',$r->content);
         $this->assertStringContainsString('Market Size, 2022-2035',$g->content($r));
         config(['report_graphics.forecast_end'=>2036]);

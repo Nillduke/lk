@@ -20,7 +20,11 @@ class ReportGraphics
         if (str_contains($path, '..') || str_contains($path, '\\') || str_contains($path, "\0")) return null;
         if ($path === '/frontend/images/market-size.svg') return 'size';
         if ($path === '/frontend/images/region-2.svg') return 'region';
-        if ($path === '/uploads/images/'.($report->slug ?? '').'.svg' || preg_match('~^/uploads/images/reports/'.(int)$report->id.'/[a-f0-9]{20}\.svg$~D', $path)) return 'taxonomy';
+        $slug = $report->slug ?? '';
+        $keyword = \Illuminate\Support\Str::slug($report->keyword ?? '');
+        $names = array_unique(array_filter([$slug, $keyword, preg_replace('/^global-/', '', $slug), preg_replace('/-market$/', '', preg_replace('/^global-/', '', $slug)), preg_replace('/-market$/', '', $keyword)]));
+        foreach ($names as $name) if ($path === '/uploads/images/'.$name.'.svg') return 'taxonomy';
+        if (preg_match('~^/uploads/images/reports/'.(int)$report->id.'/[a-f0-9]{20}\.svg$~D', $path)) return 'taxonomy';
         return null;
     }
 
