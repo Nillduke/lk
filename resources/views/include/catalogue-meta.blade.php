@@ -1,7 +1,7 @@
 @php
     // Retain content-changing filters, but consolidate tracking parameters and page one.
     $canonicalQuery = array_filter(request()->only(['page', 'per_page', 'keySectors', 'keyRegionsCovered', 'selectPrice', 'selectPeriod', 'q']),
-        fn ($value) => is_scalar($value) && trim((string) $value) !== '' && $value !== 'all');
+        fn ($value, $key) => is_scalar($value) && trim((string) $value) !== '' && ($key === 'q' || $value !== 'all'), ARRAY_FILTER_USE_BOTH);
     if (isset($canonicalQuery['page'])) {
         $page = filter_var($canonicalQuery['page'], FILTER_VALIDATE_INT);
         if ($page > 1) $canonicalQuery['page'] = $page;

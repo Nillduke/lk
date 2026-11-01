@@ -8,6 +8,7 @@ class CatalogueCanonicalTest extends TestCase
     public function test_listing_canonicals_consolidate_page_one_and_tracking_but_keep_distinct_content(): void
     {
         $cases = [
+            '/all-reports?q=all' => '/all-reports?q=all',
             '/industry/software-hardware?page=1&utm_source=google' => '/industry/software-hardware',
             '/industry/healthcare?page=2&utm_source=google' => '/industry/healthcare?page=2',
             '/all-reports?page=1&per_page=12&keySectors=all&q=medical+devices&utm_source=test' => '/all-reports?q=medical%20devices',
