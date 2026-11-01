@@ -50,10 +50,11 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-3 wow fadeInRight">
-                    <h4 class="footer-title text-uppercase">Address</h4>
+                    <h4 class="footer-title text-uppercase">Corporate Office:</h4>
                     <p class="footer-add">
-                        Baner, Pune - 411045,<br>
-                        Maharashtra, India.
+                        Icon Tower, Office No. 702,<br>
+                        off Baner-Mhalunge Road,<br>
+                        Baner, Pune MH - 411045
                     </p>
                     <ul class="list-unstyled footer-links-contact">
                         <li>
