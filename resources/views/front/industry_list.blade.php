@@ -1,4 +1,7 @@
 @extends('layout.default')
+@section('head_meta')
+@include('include.catalogue-meta')
+@endsection
 @section('content')
 <div class="catalogue-page catalogue-industry">
 <section class="catalogue-hero catalogue-category-hero" style="--category-image:url('/frontend/images/industry-banner/{{ $industry->slug }}.jpg')"><div class="container"><nav aria-label="breadcrumb"><ol class="breadcrumb site-breadcrumb"><li class="breadcrumb-item"><a href="{{ url('/') }}" aria-label="Home"><i class="fas fa-home"></i></a></li><li class="breadcrumb-item active" aria-current="page">{{ $industry->name }} Reports</li></ol></nav><h1>{{ $industry->name }} Reports</h1>@include('include.catalogue-search')

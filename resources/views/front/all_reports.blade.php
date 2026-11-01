@@ -1,4 +1,7 @@
 @extends('layout.default')
+@section('head_meta')
+@include('include.catalogue-meta')
+@endsection
 @section('content')
 <div class="catalogue-page catalogue-all">
 <section class="catalogue-hero"><div class="container"><nav aria-label="breadcrumb"><ol class="breadcrumb site-breadcrumb"><li class="breadcrumb-item"><a href="{{ url('/') }}" aria-label="Home"><i class="fas fa-home"></i></a></li><li class="breadcrumb-item active" aria-current="page">All Reports</li></ol></nav><div class="lat-rep-heading">
