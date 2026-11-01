@@ -88,4 +88,19 @@ class ReportFaqsTest extends TestCase
         $viewer=Mockery::mock(User::class)->makePartial();$viewer->id=2;$viewer->shouldReceive('canAccess')->andReturnFalse();$this->actingAs($viewer);
         $this->postJson('/authuser/reports/faqs/extract',['keyword'=>'Biobanking','content'=>$this->content()])->assertForbidden();
     }
+    public function test_custom_report_images_keep_their_sources_when_style_is_the_first_attribute(): void
+    {
+        $payload=$this->payload();$images=[
+            '<img style="width:800px;height:500px" src="/uploads/images/custom-test-size.png" alt="Market size">',
+            "<img style='width:800px' src='/uploads/images/custom-test-competition.png' alt='Competition'>",
+            '<img style="display:block" src="/uploads/images/custom-test-regions.png" alt="Regions">',
+        ];
+        $payload['content']='<p>Original report introduction.</p>'.implode('<p>Keep this paragraph between images.</p>',$images);
+        $this->postJson('/authuser/manage/reports',$payload)->assertOk();
+        $response=$this->get('/report/biobanking-test')->assertOk();
+        foreach(['custom-test-size.png','custom-test-competition.png','custom-test-regions.png','Market size','Competition','Regions'] as $text)$response->assertSee($text);
+        $response->assertSee('Original report introduction.')->assertDontSee('<img>',false);
+        $this->assertDatabaseHas('reports_meta',['content'=>$payload['content']]);
+    }
+
 }

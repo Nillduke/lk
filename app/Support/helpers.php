@@ -16,6 +16,20 @@ function site_paragraphs($text)
 
     return $text === strip_tags($text) ? nl2br(e($text)) : $text;
 }
+/** Normalize report formatting without consuming image or link attributes after style. */
+function report_display_content($html): string
+{
+    $pattern = <<<'REPORT_TAGS'
+~<!--[\s\S]*?-->|<(script|style|textarea|title|iframe|xmp)\b(?:[^>"']+|"[^"]*"|'[^']*')*>[\s\S]*?</\1\s*>|<[a-z][a-z0-9:-]*\b(?:[^>"']+|"[^"]*"|'[^']*')*>~i
+REPORT_TAGS;
+    return preg_replace_callback($pattern, function ($match) {
+        if (str_starts_with($match[0], '<!--') || !empty($match[1])) return $match[0];
+        // Skip quoted values belonging to other attributes, such as alt or data attributes.
+        return preg_replace_callback('~"[^"]*"|\'[^\']*\'|\s+style\s*=\s*(?:"[^"]*"|\'[^\']*\'|[^\s>]+)~i',
+            fn ($attribute) => preg_match('/^\s/', $attribute[0]) ? '' : $attribute[0], $match[0]);
+    }, (string) $html);
+}
+
 function report_forecast($text)
 {
     preg_match_all('/\d{4}/', (string) $text, $m);

@@ -255,7 +255,7 @@
                     <div id="reportSummary" class="tab-pane contcss fade show active"><br>
                         <h3>Report Summary</h3>
                         @php 
-                        $text = preg_replace('#(<[a-z ]*)(style=("|\')(.*?)("|\'))([a-z ]*>)#', '\\1\\6', $report->content);
+                        $text = report_display_content($report->content);
                         $text = preg_replace('/<td (width|height)="\d*">/', '<td style="width: 46%;">', $text);
                         // $doc = new DOMDocument();
                         // $doc->loadHTML($text);
