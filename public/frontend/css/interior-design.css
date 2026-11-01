@@ -350,7 +350,7 @@ body.interior-site .enquiry-design .need-assistance-desc a{font-size:14px}
  .interior-article .interior-content .cont :is(p,li,div,span){font-size:14px!important;line-height:1.85!important}
  .interior-article .interior-content .cont :is(h1,h2,h3,h4){font-size:21px!important}
  body.interior-site.page-report .report-layout>.row{display:flex;flex-direction:column;gap:26px}
- body.interior-site.page-report .report-title{font-size:21px!important;line-height:1.4!important;max-height:7em}
+ body.interior-site.page-report .report-title{font-size:21px!important;line-height:1.4!important;max-height:none}
  body.interior-site.page-report .report-title.is-expanded{max-height:none}
  body.interior-site.page-report .rd-details-contents{font-size:11px!important}
  body.interior-site.page-report .report-reading-column .rdPills{top:94px}
