@@ -78,4 +78,10 @@ class CcavenuePaymentTest extends TestCase
   $a=$this->attempt();$this->flushSession();$this->api($a);$this->post(route('ccavenue.notify'),['encResp'=>$this->gatewayResponse($a)])->assertOk()->assertSee('OK');$this->assertDatabaseHas('checkouts',['payment_status'=>'Success']);
  }
 
+ public function test_existing_checkout_discount_is_read_from_database_not_browser():void {
+  $this->attempt();$order=DB::table('checkouts')->first();DB::table('checkouts')->where('id',$order->id)->update(['amt_tobe_paid'=>2800]);
+  $this->withSession(['checkout_source'=>$order->id])->post('/checkoutprocess',$this->payload())->assertRedirect(route('ccavenue.redirect'));
+  $this->assertDatabaseHas('checkouts',['id'=>$order->id+1,'amt_tobe_paid'=>2800]);
+ }
+
 }
