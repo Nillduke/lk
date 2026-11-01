@@ -27,3 +27,5 @@ CCAvenue-owned store logo, language, SMS/WhatsApp fees, alerts, discounts and se
 Official references:
 - https://links.avenues.info/downloads/CCAvenue_Integration_Ver_3_3.pdf
 - https://links.avenues.info/downloads/CCAvenues_API_Vers-1_3.pdf (status API guide; availability can vary)
+
+Current API credentials may verify existing orders when the merchant and environment still match. Callback decryption retains the original website key. Error 31002 rejects currency; the live rejected order had USD 3500. The status API separately returned status=1, Access_code: Invalid Parameter, with only website credentials configured. Both merchant USD activation and correct API credentials require merchant dashboard verification.

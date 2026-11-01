@@ -41,7 +41,11 @@ class CcavenueGateway
   $safe=[];foreach(['order_status','tracking_id','bank_ref_no','payment_mode','status_code','status_message','failure_message'] as $field)if(isset($data[$field])&&is_string($data[$field]))$safe[$field]=Str::limit($data[$field],250,'');return $safe;
  }
  public function verify(object $attempt):array {
-  $c=$this->credentials($attempt);$key=$c['api_working_key']?:$c['working_key'];$code=$c['api_access_code']?:$c['access_code'];
+  $c=$this->credentials($attempt);
+  // API access can be configured after an order starts; callback decryption still uses its original website key.
+  $currentApi=(string)config('ccavenue.merchant_id')===(string)$c['merchant_id'] && config('ccavenue.mode')===$attempt->mode && filled(config('ccavenue.api_access_code')) && filled(config('ccavenue.api_working_key'));
+  $key=$currentApi?config('ccavenue.api_working_key'):($c['api_working_key']?:$c['working_key']);
+  $code=$currentApi?config('ccavenue.api_access_code'):($c['api_access_code']?:$c['access_code']);
   try{
    $response=Http::asForm()->connectTimeout(5)->timeout(15)->withOptions(['allow_redirects'=>false])->post(($attempt->mode==='live'?'https://api.ccavenue.com':'https://apitest.ccavenue.com').'/apis/servlet/DoWebTrans',[
     'enc_request'=>$this->encrypt(json_encode(['order_no'=>$attempt->order_number,'reference_no'=>$attempt->tracking_id??'']),$key),'access_code'=>$code,'command'=>'orderStatusTracker','request_type'=>'JSON','response_type'=>'JSON','version'=>'1.2']);

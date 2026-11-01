@@ -102,4 +102,20 @@ class CcavenuePaymentTest extends TestCase
   $this->assertDatabaseCount('checkouts',0);
   $this->get('/checkout-form/1')->assertOk()->assertSee('ccavenue-logo.png')->assertDontSee('value="PayPal"',false)->assertDontSee('paypal.png');
  }
+
+ public function test_new_api_credentials_can_verify_an_existing_attempt_without_changing_its_callback_key():void {
+  $a=$this->attempt();config(['ccavenue.api_access_code'=>'NEWAPIACCESS','ccavenue.api_working_key'=>'NEWAPIKEY']);
+  $data=['order_no'=>$a->order_number,'order_amt'=>3500,'order_curr'=>'USD','reference_no'=>'123456789012','order_status'=>'Shipped','error_code'=>''];
+  Http::fake(['https://apitest.ccavenue.com/*'=>Http::response(http_build_query(['status'=>'0','enc_response'=>app(CcavenueGateway::class)->encrypt(json_encode($data),'NEWAPIKEY')]))]);
+  $this->post(route('ccavenue.response',$a->id),['encResp'=>$this->gatewayResponse($a)])->assertStatus(303);
+  $this->assertDatabaseHas('checkouts',['payment_status'=>'Success']);
+  Http::assertSent(fn($request)=>$request['access_code']==='NEWAPIACCESS');
+ }
+ public function test_invalid_billing_details_do_not_create_orders_or_send_emails():void {
+  \Illuminate\Support\Facades\Mail::fake();
+  foreach([['email'=>'invalid'],['name'=>'ab'],['contact_no'=>'https://spam.example']] as $invalid){
+   $this->postJson('/checkoutprocess',array_replace($this->payload(),$invalid))->assertUnprocessable()->assertJsonValidationErrors(array_keys($invalid));
+  }
+  $this->assertDatabaseCount('checkouts',0);\Illuminate\Support\Facades\Mail::assertNothingSent();
+ }
 }

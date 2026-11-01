@@ -50,8 +50,8 @@
                 <li>Credit Card <br>
             – We accept VISA, MasterCard, Maestro, Diners Club and American Express cards. On successful payment, an invoice will emailed to you.</li>
                 <li>
-            PayPal<br>
-            – National and international clients can choose PayPal to pay online.</li>
+            CCAvenue<br>
+            – Customers can pay securely through CCAvenue using the payment methods available at checkout.</li>
                 <li>
             Wire Transfer<br>
             – Once you have placed your order (online, post or fax) an invoice will be emailed to you for payment via wire transfer or company cheque.</li>

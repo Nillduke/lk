@@ -35,7 +35,7 @@ class CheckoutController extends Controller
         $licenses = DB::table('reports_licenses')->where('report_id', $id)->orderBy('lic_price')->get()->all();
         abort_unless($licenses, 404);
         $license = $licenses[0];
-        $selected = explode(':', session('chk_report_license', ''))[0];
+        $selected = old('report_lic_id', explode(':', session('chk_report_license', ''))[0]);
         foreach ($licenses as $l) {
             if ((string) $l->id === $selected) {
                 $license = $l;
