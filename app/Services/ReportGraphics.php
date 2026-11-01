@@ -38,7 +38,7 @@ class ReportGraphics
 
     public function content(object $report): string
     {
-        $version = substr(hash('sha256', json_encode(config('report_graphics')).'v1'.($report->content ?? '')), 0, 16);
+        $version = substr(hash('sha256', json_encode(config('report_graphics')).'v2'.($report->content ?? '')), 0, 16);
         $html = preg_replace_callback('~<img\b[^>]*>~is', function ($m) use ($report, $version) {
             return preg_replace_callback('~\bsrc\s*=\s*([\'\"])(.*?)\1~is', function ($src) use ($report, $version) {
                 $kind = $this->kind($src[2], $report);
@@ -91,7 +91,7 @@ class ReportGraphics
             $height = 95 + ($i % 4) * 35;
             $bars .= '<rect class="cls-8" x="'.($x-25).'" y="'.(605-$height).'" width="50" height="'.$height.'"/>';
             $bars .= '<text class="cls-11" text-anchor="middle" x="'.$x.'" y="638">'.$year.'</text>';
-            $bars .= '<text class="cls-12" text-anchor="middle" x="'.$x.'" y="'.(605-$height-25).'">XX</text>';
+            if ($year === $p['base_year']) $bars .= '<text class="cls-12" text-anchor="middle" x="'.$x.'" y="'.(605-$height-25).'">XX</text>';
             $points[] = $x.','.(605-$height-55);
         }
         $bars .= '<rect class="cls-9" x="150" y="605" width="1700" height="6"/><polyline class="cls-10" points="'.implode(' ', $points).'"/>';

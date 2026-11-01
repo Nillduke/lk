@@ -50,6 +50,8 @@ class ReportGraphicsTest extends TestCase
         $out=$g->taxonomy($svg);$d=new \DOMDocument;$this->assertTrue($d->loadXML($out));
         $x=new \DOMXPath($d);$x->registerNamespace('s','http://www.w3.org/2000/svg');
         foreach(range(2022,2035) as $y) $this->assertSame(1,$x->query('//s:text[text()="'.$y.'"]')->length);
+        $this->assertSame(1,$x->query('//s:text[text()="XX"]')->length);
+        $this->assertSame($x->query('//s:text[text()="2025"]')->item(0)->getAttribute('x'),$x->query('//s:text[text()="XX"]')->item(0)->getAttribute('x'));
         $this->assertSame(14,$x->query('//*[@id="Graph-2"]//s:rect[@class="cls-8"]')->length);
         foreach(['Historical: 2022-2024','Base year: 2025','Forecast: 2026-2035','Cryogenic Storage','Drug Discovery','2022-2035'] as $label) $this->assertStringContainsString($label,$out);
         $this->assertStringNotContainsString('2018-2028',$out);
@@ -64,6 +66,11 @@ class ReportGraphicsTest extends TestCase
         foreach(['size','region'] as $kind) {
             $response=$this->get('/report-graphics/123/'.$kind.'.svg')->assertOk()->assertHeader('Content-Type','image/svg+xml; charset=UTF-8');
             $d=new \DOMDocument;$this->assertTrue($d->loadXML($response->getContent()));
+            if ($kind==='size') {
+                $x=new \DOMXPath($d);$x->registerNamespace('s','http://www.w3.org/2000/svg');
+                $this->assertSame(1,$x->query('//s:text[text()="XX"]')->length);
+                $this->assertSame($x->query('//s:text[text()="2025"]')->item(0)->getAttribute('x'),$x->query('//s:text[text()="XX"]')->item(0)->getAttribute('x'));
+            }
             foreach(['Historical: 2022-2024','Base year: 2025','Forecast: 2026-2035'] as $text) $response->assertSee($text,false);
             $this->withHeader('If-None-Match',$response->headers->get('ETag'))->get('/report-graphics/123/'.$kind.'.svg')->assertStatus(304);
             $this->flushHeaders();
