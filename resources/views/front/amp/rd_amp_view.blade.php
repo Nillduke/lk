@@ -327,7 +327,7 @@ footer{
     margin-top: 9px;
     box-shadow: 2px 2px 3px #868686;
 }
-.rd-details{padding-left: 135px;}
+.rd-details{padding-left: 0;}
 .rd-title{
 	font-size: 20px;
     color: #0276A7;
@@ -634,8 +634,6 @@ font-weight: 600;}
     <section>
         <div class="row">
             <div class="col-12 rd-details-container">
-                <amp-img src="/frontend/images/cover-1.png" alt="{{ $report->title }}" width="106" height="144" class="rd-img">
-                </amp-img>
                 <div class="rd-details">
                     <h1 class="rd-title" [class]="reportTitleExpanded ? 'rd-title is-expanded' : 'rd-title'">{{ $report->title }}</h1><button class="amp-title-toggle" type="button" on="tap:AMP.setState({reportTitleExpanded: !reportTitleExpanded})" [text]="reportTitleExpanded ? 'Show less' : 'Read full title'">Read full title</button>
                     <div>

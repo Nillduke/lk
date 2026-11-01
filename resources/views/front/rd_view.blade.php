@@ -190,16 +190,6 @@
             <div class="row">
                 <div class="col-12">
                     <div class="d-flex">
-                        <div class="flex-shrink-0 repcover">
-                            <div class="book">
-                                <img src="{{ url('frontend/images/cover-1.jpg') }}" height="139" width="110" class="img-fluid img-front"
-                                alt="eternity report detail" />
-                                <div id="imgmiddle"></div>
-                                <img src="{{ url('frontend/images/cover-1.jpg') }}" height="139" width="110" class="img-fluid img-back"
-                                alt="eternity report detail" />
-                            </div>
-                            <div id="txt">{{ $report->keyword }} Market</div>
-                        </div>
                         <div class="flex-grow-1 ms-3">
                             <h1 class="report-title" id="report-page-title">{{ $report->title }}
                             </h1>
