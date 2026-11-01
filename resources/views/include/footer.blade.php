@@ -82,7 +82,7 @@
         <div class="container wow fadeInUp" style="border-top:1px solid #8abfee;">
             <div class="row">
                 <div class="col-sm-5 pb-3 pt-3">
-                    <span class="mb-0" style="font-size:12px;">Â© Copyright at Eternity Insights. Page rendered in {elapsed_time} seconds.</span>
+                    <span class="mb-0" style="font-size:12px;">&copy; 2026 Eternity Insights. All rights reserved.</span>
                 </div>
                 <div class="col-sm-7 pb-3 pt-3">
                     <div class="social">

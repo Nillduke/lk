@@ -712,7 +712,7 @@ echo  amp_content(strip_tags($html,'<div><span><p><strong><ul><li><table><td><tr
       
    <div class="clear"></div>
    @include('include.amp-footer')
-    <div class="copyright">{{ date('Y') }} &copy; Copyright Eternity Insights</div>
+    <div class="copyright">&copy; 2026 Eternity Insights. All rights reserved.</div>
 </div><!--abe-preview main div-->
 <amp-sidebar id="sidebar" layout="nodisplay" side="left">
 		<div class="close-btn">

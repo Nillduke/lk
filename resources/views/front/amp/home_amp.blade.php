@@ -413,7 +413,7 @@ footer{
 </div>
 </section>
 @include('include.amp-footer')
-<div class="copyright">{{ date('Y') }} &copy; Copyright Eternity Insights</div>
+<div class="copyright">&copy; 2026 Eternity Insights. All rights reserved.</div>
 </div><!--abe-preview main div-->
 <amp-sidebar id="sidebar" layout="nodisplay" side="left">
 		<div class="close-btn">
