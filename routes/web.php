@@ -77,6 +77,8 @@ Route::prefix('authuser')->middleware(['auth', AdminAccess::class])->group(funct
     Route::post('manage/{resource}/{id}', [Admin::class, 'save'])->name('admin.update');
     Route::delete('manage/{resource}/{id}', [Admin::class, 'delete'])->name('admin.delete');
     Route::get('export/{resource}', [Admin::class, 'export'])->name('admin.export');
+    Route::get('reports/content-cleanup/batch/{id}', [\App\Http\Controllers\ReportCleanupController::class, 'job'])->where('id', '[A-Za-z0-9]{40}')->name('admin.cleanup.job');
+    Route::post('reports/content-cleanup/batch/{id}/{action}', [\App\Http\Controllers\ReportCleanupController::class, 'jobAction'])->where('id', '[A-Za-z0-9]{40}')->whereIn('action', ['scan','select','begin','apply'])->middleware('throttle:600,1')->name('admin.cleanup.job.action');
     Route::get('reports/content-cleanup', [\App\Http\Controllers\ReportCleanupController::class, 'index'])->name('admin.cleanup.index');
     Route::post('reports/content-cleanup/preview', [\App\Http\Controllers\ReportCleanupController::class, 'preview'])->middleware('throttle:20,1')->name('admin.cleanup.preview');
     Route::post('reports/content-cleanup/apply', [\App\Http\Controllers\ReportCleanupController::class, 'apply'])->middleware('throttle:10,1')->name('admin.cleanup.apply');

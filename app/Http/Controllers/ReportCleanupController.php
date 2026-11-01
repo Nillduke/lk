@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\ReportContentCleanup;
+use App\Services\ReportCleanupBatchJob;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -20,15 +21,19 @@ class ReportCleanupController extends Controller
         return view('admin.report-cleanup', ['categories' => DB::table('categories')->orderBy('name')->get(), 'filters' => $request->query(), 'batch' => null]);
     }
 
-    public function preview(Request $request, ReportContentCleanup $cleanup)
+    public function preview(Request $request, ReportContentCleanup $cleanup, ReportCleanupBatchJob $jobs)
     {
         $this->authorizeEditor();
         $filters = $request->validate([
-            'after' => 'required|integer|min:0', 'batch_size' => ['required','integer',Rule::in([10,25,50])],
+            'after' => 'required|integer|min:0', 'batch_size' => ['required','integer',Rule::in([10,25,50,100,500,1000,5000])],
             'status' => ['required',Rule::in(['active','inactive','all'])], 'category_id' => 'nullable|integer|exists:categories,id',
             'search' => 'nullable|string|max:150', 'sentences' => 'required|boolean', 'toc' => 'required|boolean',
         ]);
         $filters += ['category_id' => null, 'search' => '']; $filters['search'] = trim($filters['search'] ?? '');
+        if ($filters['batch_size'] > 50) {
+            $id = $jobs->start($filters, (int)$request->user()->id);
+            return redirect()->route('admin.cleanup.job', $id);
+        }
         $batch = $cleanup->batch($filters);
         $token = Str::random(48);
         $request->session()->put('report_cleanup_preview', ['token' => $token, 'expires' => now()->addMinutes(20)->timestamp,
@@ -67,4 +72,32 @@ class ReportCleanupController extends Controller
         return redirect()->route('admin.cleanup.index', array_merge($preview['filters'], ['after' => $preview['after']]))
             ->with('success', $saved.' selected reports updated. '.$skipped.' changed or unavailable reports skipped. Preview the next batch when ready.');
     }
+    public function job(Request $request, string $id, ReportCleanupBatchJob $jobs)
+    {
+        $this->authorizeEditor();
+        $data = $request->validate(['page'=>'nullable|integer|min:1|max:5000']);
+        return view('admin.report-cleanup-large', $jobs->page($id, (int)$request->user()->id, (int)($data['page'] ?? 1)));
+    }
+
+    public function jobAction(Request $request, string $id, string $action, ReportCleanupBatchJob $jobs)
+    {
+        $this->authorizeEditor();
+        $owner = (int)$request->user()->id;
+        $result = match ($action) {
+            'scan' => $jobs->scan($id, $owner),
+            'begin' => $jobs->beginApply($id, $owner),
+            'apply' => $jobs->applyStep($id, $owner),
+            'select' => $this->jobSelection($request, $id, $owner, $jobs),
+            default => abort(404),
+        };
+        return response()->json($result);
+    }
+
+    private function jobSelection(Request $request, string $id, int $owner, ReportCleanupBatchJob $jobs): array
+    {
+        $data = $request->validate(['mode'=>['required',Rule::in(['all','none','page'])],
+            'page'=>'nullable|integer|min:1|max:5000','ids'=>'nullable|array|max:50','ids.*'=>'integer|distinct']);
+        return $jobs->select($id, $owner, $data['mode'], (int)($data['page'] ?? 1), array_map('intval',$data['ids'] ?? []));
+    }
+
 }

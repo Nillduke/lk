@@ -57,6 +57,15 @@ class ReportContentCleanup
         return ['report' => $report, 'meta' => $meta, 'reason' => $reason];
     }
 
+    public function contentFingerprint(array $source, array $updates = []): string
+    {
+        $report = (array)$source['report']; $meta = $source['meta'] ? (array)$source['meta'] : null;
+        unset($report['updated_at']);
+        $report = array_replace($report, $updates['reports'] ?? []);
+        if ($meta !== null) { unset($meta['updated_at']); $meta = array_replace($meta, $updates['reports_meta'] ?? []); }
+        return hash('sha256', serialize([$report, $meta]));
+    }
+
     public function plan(array $source, array $options): array
     {
         $r = $source['report']; $m = $source['meta'];
@@ -87,6 +96,7 @@ class ReportContentCleanup
         return ['id' => $r->id, 'title' => $r->title, 'slug' => $r->slug, 'status' => $r->status,
             'reason' => $reason, 'reference' => $reference, 'changes' => $changes, 'updates' => $updates,
             'fingerprint' => hash('sha256', serialize([$r, $m])),
+            'result_fingerprint' => $this->contentFingerprint($source, $updates),
             'remaining' => $m ? (bool)preg_match('~covid|coronavirus|pandemic|sars[- ]?cov~iu', implode(' ', array_merge(array_values($updates['reports'] + (array)$r), array_values($updates['reports_meta'] + (array)$m)) )) : false];
     }
 

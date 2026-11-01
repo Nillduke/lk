@@ -5,12 +5,12 @@
 @endpush
 @section('content')
 <h1 class="h3">Report content cleanup</h1>
-<p class="text-muted">Review outdated COVID-19 wording in small batches. Only the reports you select will be updated.</p>
+<p class="text-muted">Review outdated COVID-19 wording in batches of up to 5,000 reports. Only the reports you select will be updated.</p>
 <div class="panel">
 <h2 class="h5">Find reports to review</h2>
 <form method="post" action="{{ route('admin.cleanup.preview') }}">@csrf
 <div class="row">
-<div class="col-md-3"><label for="batch_size">Reports per batch</label><select id="batch_size" name="batch_size" class="form-select">@foreach([10,25,50] as $size)<option value="{{ $size }}" @selected(($filters['batch_size']??10)==$size)>{{ $size }} reports</option>@endforeach</select></div>
+<div class="col-md-3"><label for="batch_size">Reports per batch</label><select id="batch_size" name="batch_size" class="form-select">@foreach([10,25,50,100,500,1000,5000] as $size)<option value="{{ $size }}" @selected(($filters['batch_size']??5000)==$size)>{{ number_format($size) }} reports</option>@endforeach</select></div>
 <div class="col-md-3"><label for="cleanup_status">Report status</label><select id="cleanup_status" name="status" class="form-select">@foreach(['active'=>'Published reports','inactive'=>'Draft / inactive reports','all'=>'All reports'] as $value=>$label)<option value="{{ $value }}" @selected(($filters['status']??'active')===$value)>{{ $label }}</option>@endforeach</select></div>
 <div class="col-md-6"><label for="cleanup_category">Industry</label><select id="cleanup_category" name="category_id" class="form-select"><option value="">All industries</option>@foreach($categories as $category)<option value="{{ $category->id }}" @selected(($filters['category_id']??null)==$category->id)>{{ $category->name }}</option>@endforeach</select></div>
 <div class="col-12"><label for="cleanup_search">Report name (optional)</label><input id="cleanup_search" name="search" class="form-control" maxlength="150" value="{{ $filters['search']??'' }}" placeholder="For example: Automotive Active Safety"></div>
