@@ -1,0 +1,6 @@
+<div class="border rounded p-3 mb-3 bg-light" data-faq-row>
+<div class="d-flex justify-content-between align-items-center gap-2 mb-2"><strong data-faq-number>FAQ {{ (int)$faqIndex+1 }}</strong><div class="d-flex gap-1"><button type="button" class="btn btn-sm btn-outline-secondary" data-faq-up aria-label="Move FAQ up">Up</button><button type="button" class="btn btn-sm btn-outline-secondary" data-faq-down aria-label="Move FAQ down">Down</button><button type="button" class="btn btn-sm btn-outline-danger" data-faq-remove>Remove</button></div></div>
+<label for="faq-question-{{ $faqIndex }}">Question</label><input id="faq-question-{{ $faqIndex }}" class="form-control" name="report_faqs[{{ $faqIndex }}][question]" value="{{ $faqRow['question']??'' }}" maxlength="400" data-faq-question>
+<label for="faq-answer-{{ $faqIndex }}">Answer</label><textarea id="faq-answer-{{ $faqIndex }}" class="form-control mb-1" name="report_faqs[{{ $faqIndex }}][answer]" rows="4" maxlength="3000" data-faq-answer placeholder="Write an answer supported by this report. Leave blank to omit this question.">{{ $faqRow['answer']??'' }}</textarea>
+<p class="small text-muted mb-0" data-faq-row-note>{{ trim($faqRow['answer']??'')!==''?'Review this answer before publishing.':'No supported answer extracted. Add an answer to publish this question.' }}</p>
+</div>

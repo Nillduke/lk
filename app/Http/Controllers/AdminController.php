@@ -99,7 +99,8 @@ return view('admin.dashboard', compact('counts'));
         $assigned = $resource === 'users' && $record ? DB::table('rbac_userroles')->where('UserID', $record->id)->pluck('RoleID')->all() : [];
         $assignedPermissions = $resource === 'roles' && $record ? DB::table('rbac_rolepermissions')->where('RoleID', $record->ID)->pluck('PermissionID')->all() : [];
 
-        return view('admin.edit', compact('def', 'record', 'fields', 'meta', 'licenses', 'categories', 'publishers', 'roles', 'permissions', 'assigned', 'assignedPermissions'));
+        $faqEditor = $resource === 'reports' ? app(\App\Services\ReportFaqs::class)->editor($record ? (object)((array)$record + ['content'=>$meta->content??'']) : null) : null;
+        return view('admin.edit', compact('faqEditor', 'def', 'record', 'fields', 'meta', 'licenses', 'categories', 'publishers', 'roles', 'permissions', 'assigned', 'assignedPermissions'));
     }
 
     public function save(Request $request, $resource, $id = null)
@@ -139,6 +140,7 @@ return view('admin.dashboard', compact('counts'));
                 if (!preg_match('~^(?:https?://|/?(?:uploads|storage|frontend)/)~i', $value) || str_contains($value, '..')) $fail('Use a local image path or an HTTP(S) image URL.');
             }]]);
         }
+        $faqData = $resource === 'reports' ? app(\App\Services\ReportFaqs::class)->validate($request) : null;
         $reportOptions = app(\App\Services\ReportOptions::class);
         $licenseRows = $resource === 'reports' ? $reportOptions->licenses($request, $record) : null;
         $columns = Schema::getColumns($def['table']);
@@ -189,7 +191,7 @@ return view('admin.dashboard', compact('counts'));
                 $request->validate([$col['name'] => 'required']);
             }
         }
-        $saved = DB::transaction(function () use ($def, $record, $data, $resource, $request, $reportOptions, $licenseRows) {
+        $saved = DB::transaction(function () use ($def, $record, $data, $resource, $request, $reportOptions, $licenseRows, $faqData) {
             if (in_array($resource, ['roles', 'permissions']) && ! $record) {
                 $max = DB::table($def['table'])->max('Rght') ?? 0;
                 DB::table($def['table'])->where($def['pk'], 1)->increment('Rght', 2);
@@ -208,6 +210,7 @@ return view('admin.dashboard', compact('counts'));
                     if (!array_key_exists('content', $meta) && !DB::table('reports_meta')->where('report_id', $id)->exists()) $meta['content'] = '';
                     DB::table('reports_meta')->updateOrInsert(['report_id' => $id], $meta + ['updated_at' => now(), 'created_at' => now()]);
                 }
+                if ($faqData !== null) app(\App\Services\ReportFaqs::class)->save((int)$id, $faqData);
                 if ($licenseRows !== null) $reportOptions->saveLicenses((int)$id, $licenseRows);
             }
             if ($resource === 'users' && $request->has('role_ids')) {
@@ -277,6 +280,7 @@ return redirect()->route('admin.index', $resource)->with('success', 'Saved succe
                     abort_if((int) $key === 1, 422, 'The root entry is protected.');
                 }
                 if ($resource === 'reports') {
+                    DB::table('lr_report_faqs')->where('report_id', $key)->delete();
                     DB::table('reports_meta')->where('report_id', $key)->delete();
                     DB::table('reports_licenses')->where('report_id', $key)->delete();
                 }

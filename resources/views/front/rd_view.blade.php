@@ -338,59 +338,7 @@
             </aside>
         </div>
     </div>
-    <!-- FAQs -->
-    <section class="faq-sec" style="margin: 3.2rem 0 6rem 0;">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <h2>Frequently Asked Questions on this Report</h2>
-                <div class="accordion accordion-flush" id="accordionFlushExample">
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="flush-headingOne">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">
-                            How is the {{ $keyword }} Market segmented?
-                        </button>
-                        </h2>
-                        <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-                        <div class="accordion-body">The {{ $keyword }} Market is segmented based on Type, Application, and by region.</div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="flush-headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo" aria-expanded="false" aria-controls="flush-collapseTwo">
-                            Who are the leading players in the {{ $keyword }} Market?
-                        </button>
-                        </h2>
-                        <div id="flush-collapseTwo" class="accordion-collapse collapse" aria-labelledby="flush-headingTwo" data-bs-parent="#accordionFlushExample">
-                        <div class="accordion-body"><strong>{{ substr_replace($key_players, ' and', strrpos($key_players, ','), 1) }}</strong> are the leading players of global {{ $keyword }} market.</div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="flush-headingThree">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree" aria-expanded="false" aria-controls="flush-collapseThree">
-                        What would be the forecast period in the {{ $keyword }} Market?
-                        </button>
-                        </h2>
-                        <div id="flush-collapseThree" class="accordion-collapse collapse" aria-labelledby="flush-headingThree" data-bs-parent="#accordionFlushExample">
-                        <div class="accordion-body">The forecast period would be from 2022 to 2030 in the market report with year 2021 as a base year.</div>
-                        </div>
-                    </div>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="flush-headingFour">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseFour" aria-expanded="false" aria-controls="flush-collapseFour">
-                        What is the criteria used for selecting company profile?
-                        </button>
-                        </h2>
-                        <div id="flush-collapseFour" class="accordion-collapse collapse" aria-labelledby="flush-headingFour" data-bs-parent="#accordionFlushExample">
-                        <div class="accordion-body">Factors such as competitive strength and market positioning are key areas considered while selecting top companies to be profiled.</div>
-                        </div>
-                    </div>
-                    </div>
-                
-                </div>
-            </div>
-        </div> 
-    </section>
+    @include('include.report-faqs')
     <!-- MAIN CTA -->
     <section class="sample-download">
         <div class="container h-100">
@@ -693,7 +641,6 @@
 @endsection
 @section('footer_script')
 
-<script type="application/ld+json">{"@@context":"https://schema.org","@@type":"FAQPage","mainEntity":[{"@@type":"Question","name":"How is the {{ $keyword }} Market segmented?","acceptedAnswer":[{"@@type":"Answer","text":"The {{ $keyword }} Market is segmented based on Type, Application, and by region."}]},{"@@type":"Question","name":"Who are the leading players in the {{ $keyword }} Market?","acceptedAnswer":[{"@@type":"Answer","text":"{{ substr_replace($key_players, ' and', strrpos($key_players, ','), 1) }} are the leading players of global {{ $keyword }} market."}]},{"@@type":"Question","name":"What would be the forecast period in the {{ $keyword }} Market?","acceptedAnswer":[{"@@type":"Answer","text":"The forecast period would be from 2022 to 2030 in the market report with year 2021 as a base year."}]},{"@@type":"Question","name":"What is the criteria used for selecting company profile?","acceptedAnswer":[{"@@type":"Answer","text":"Factors such as competitive strength and market positioning are key areas considered while selecting top companies to be profiled."}]}]}]}</script>
 <script src="/frontend/js/lightslider.js" defer></script>
     <script>
        $(document).ready(function() { 

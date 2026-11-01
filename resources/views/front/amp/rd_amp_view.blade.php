@@ -681,6 +681,7 @@ echo  amp_content(strip_tags($html,'<div><span><p><strong><ul><li><table><td><tr
                 </amp-selector>
             </div>
 </section>
+@include('include.report-faqs',['ampFaqs'=>true])
 <div class="clear"></div>
 <div class="row">
 <!-- purchase option-->

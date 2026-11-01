@@ -94,12 +94,13 @@ return view($view, ['title' => $title, 'countries' => $this->countries(), 'indus
     {
         $report = self::catalogue()->leftJoin('publishers as p', 'p.id', '=', 'r.publisher_id')->leftJoin('reports_meta as m', 'm.report_id', '=', 'r.id')->addSelect('p.name as publisher_name', 'm.content', 'm.toc', 'm.tables_figures')->where('r.slug', $slug)->where('r.status', 1)->first();
         abort_unless($report, 404);
+        $reportFaqs = app(\App\Services\ReportFaqs::class)->resolve($report);
         $report->content = app(\App\Services\ReportGraphics::class)->content($report);
         $key = json_decode($report->key_info ?? '', true) ?: [];
         $keyword = $report->keyword ?: preg_replace('/\s+market.*$/i', '', $report->title);
         $similar = self::catalogue()->where('r.category_id', $report->category_id)->where('r.status', 1)->where('r.id', '!=', $report->id)->orderByDesc('r.pub_date')->limit(10)->get()->all();
 
-        return view(str_starts_with($request->path(), 'report/amp/') ? 'front.amp.rd_amp_view' : 'front.rd_view', ['title' => $report->meta_title ?: $report->title, 'meta_description' => $report->meta_description ?: $report->title, 'report' => $report, 'keyword' => $keyword, 'types' => $key['types'] ?? '', 'applications' => $key['applications'] ?? '', 'key_players' => $key['key_players'] ?? '', 'licenses' => DB::table('reports_licenses')->where('report_id', $report->id)->orderBy('lic_price')->get()->all(), 'similar' => $similar, 'countries' => $this->countries()]);
+        return view(str_starts_with($request->path(), 'report/amp/') ? 'front.amp.rd_amp_view' : 'front.rd_view', ['reportFaqs' => $reportFaqs, 'title' => $report->meta_title ?: $report->title, 'meta_description' => $report->meta_description ?: $report->title, 'report' => $report, 'keyword' => $keyword, 'types' => $key['types'] ?? '', 'applications' => $key['applications'] ?? '', 'key_players' => $key['key_players'] ?? '', 'licenses' => DB::table('reports_licenses')->where('report_id', $report->id)->orderBy('lic_price')->get()->all(), 'similar' => $similar, 'countries' => $this->countries()]);
     }
 
     private function reportSearchTerm(Request $request): string

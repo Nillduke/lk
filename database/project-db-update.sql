@@ -78,3 +78,16 @@ WHERE NOT EXISTS (SELECT 1 FROM `lr_migrations` WHERE `migration` = '2026_11_01_
 UPDATE `categories` SET `name` = 'Chemicals & Advanced Materials', `updated_at` = CURRENT_TIMESTAMP
 WHERE `slug` = 'chemicals-materials'
   AND `name` IN ('Chemicals &amp; Advanced Materials', 'Chemicals &amp;amp; Advanced Materials');
+
+-- Per-report editable FAQ overrides. Automatic FAQs are derived from saved report content.
+CREATE TABLE IF NOT EXISTS `lr_report_faqs` (
+ `report_id` bigint unsigned NOT NULL,
+ `mode` varchar(10) NOT NULL DEFAULT 'custom',
+ `faqs` longtext NOT NULL,
+ `created_at` timestamp NULL,
+ `updated_at` timestamp NULL,
+ PRIMARY KEY (`report_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO `lr_migrations` (`migration`, `batch`)
+SELECT '2026_11_01_000002_add_report_faq_overrides', @ei_update_batch
+WHERE NOT EXISTS (SELECT 1 FROM `lr_migrations` WHERE `migration` = '2026_11_01_000002_add_report_faq_overrides');

@@ -72,6 +72,7 @@ Route::prefix('authuser')->middleware(['auth', AdminAccess::class])->group(funct
     Route::get('settings/email/preview', [\App\Http\Controllers\EmailSettingsController::class, 'preview'])->name('admin.email.preview');
     Route::post('settings/email/connection', [\App\Http\Controllers\EmailSettingsController::class, 'connection'])->middleware('throttle:3,1')->name('admin.email.connection');
     Route::post('settings/email/test', [\App\Http\Controllers\EmailSettingsController::class, 'test'])->middleware('throttle:3,1')->name('admin.email.test');
+    Route::post('reports/faqs/extract', [\App\Http\Controllers\ReportFaqController::class, 'extract'])->middleware('throttle:20,1')->name('admin.faqs.extract');
     Route::get('manage/{resource}', [Admin::class, 'index'])->name('admin.index');
     Route::get('manage/{resource}/create', [Admin::class, 'edit'])->name('admin.create');
     Route::post('manage/{resource}', [Admin::class, 'save'])->name('admin.store');

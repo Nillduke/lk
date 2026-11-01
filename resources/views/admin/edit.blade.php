@@ -41,6 +41,7 @@
 @endforeach
 
 </div>
+@include('admin.report-faqs')
 @endif
 @if($def['resource']==='users'&&auth()->user()->canAccess('manage_access'))<div class="panel"><label>Assigned roles</label><input type="hidden" name="role_ids[]" value="">@foreach($roles as $role)<label class="d-block"><input type="checkbox" name="role_ids[]" value="{{ $role->ID }}" @checked(in_array($role->ID,$assigned))> {{ $role->Title }}</label>@endforeach</div>@endif
 @if($def['resource']==='roles')<div class="panel"><label>Permissions</label><input type="hidden" name="permission_ids[]" value="">@foreach($permissions as $permission)<label class="d-block"><input type="checkbox" name="permission_ids[]" value="{{ $permission->ID }}" @checked(in_array($permission->ID,$assignedPermissions))> {{ $permission->Title }}</label>@endforeach</div>@endif
