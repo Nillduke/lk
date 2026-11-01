@@ -103,4 +103,15 @@ class ReportFaqsTest extends TestCase
         $this->assertDatabaseHas('reports_meta',['content'=>$payload['content']]);
     }
 
+    public function test_healthcare_sections_and_coverage_provide_five_answers_without_inventing_missing_figures(): void
+    {
+        $html='<p>The report considers 2021-2024 historic period, 2025 as base year, and 2026-2035 as forecast period.</p><h2>Key Research Highlights: Market Drivers</h2><p>Increasing product approvals and growing research investment support demand across the market.</p><h2>Key Research Highlights: Trends</h2><p>Increasing research and development spending is a leading industry trend in this market.</p><h2>Key Research Highlights: Market Restraints</h2><p>High product costs and limited awareness restrict adoption in developing regions.</p><table><tr><td>The market size value in 2025</td><td>USD XX.XX Million</td></tr><tr><td>CAGR (2026-2035)</td><td>XX.XX %</td></tr><tr><td>Base year for estimation</td><td>2025</td></tr><tr><td>Forecast period</td><td>2026-2035</td></tr><tr><td>Regional scope</td><td>North America, Europe, Asia Pacific</td></tr></table><h2>Key Market Players</h2><ul><li>AbbVie, Inc.</li><li>Novartis</li><li>Merck</li><li>Bristol Myers Squibb</li><li>Johnson &amp; Johnson</li><li>Other Company</li></ul>';
+        $r=(object)['keyword'=>'Antibody Therapeutics','content'=>$html,'key_info'=>'{"types":"Monoclonal, Bispecific"}'];
+        $rows=app(ReportFaqs::class)->generate($r);$this->assertCount(5,array_filter($rows,fn($row)=>$row['answer']!==''));
+        $this->assertStringContainsString('2026-2035',$rows[0]['answer']);$this->assertStringContainsString('2025 as the base year',$rows[0]['answer']);$this->assertStringContainsString('not provided',$rows[0]['answer']);$this->assertStringNotContainsString('XX',$rows[0]['answer']);
+        foreach(['product approvals','research and development','High product costs'] as $fact)$this->assertStringContainsString($fact,$rows[1]['answer']);
+        $this->assertStringContainsString('does not specify a leading region',$rows[3]['answer']);$this->assertStringNotContainsString('North America leads',$rows[3]['answer']);
+        $this->assertSame('Companies profiled in the report include AbbVie, Inc.; Novartis; Merck; Bristol Myers Squibb; Johnson & Johnson.',$rows[4]['answer']);
+    }
+
 }

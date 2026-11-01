@@ -57,15 +57,58 @@ class ReportFaqs
         }
         return [];
     }
+    private function attributes(\DOMDocument $doc): array
+    {
+        $attributes=[];
+        foreach($doc->getElementsByTagName('tr') as $row) {
+            $cells=$row->getElementsByTagName('td');
+            if($cells->length>=2) $attributes[strtolower(trim($this->text($cells->item(0)->textContent)," :"))]=$this->text($cells->item(1)->textContent);
+        }
+        return $attributes;
+    }
+    private function sectionAnswer(\DOMDocument $doc, string $pattern): string
+    {
+        foreach($doc->getElementsByTagName('*') as $heading) {
+            if(!preg_match('/^h[1-6]$/i',$heading->tagName) || !preg_match($pattern,$this->text($heading->textContent)))continue;
+            for($node=$heading->nextSibling;$node;$node=$node->nextSibling) {
+                if(!$node instanceof \DOMElement)continue;
+                if(preg_match('/^h[1-6]$/i',$node->tagName) || $node->tagName==='table')break;
+                if(!in_array(strtolower($node->tagName),['p','ul','ol']))continue;
+                foreach(preg_split('/(?<=[.!?])\s+(?=[\p{Lu}\p{N}])/u',$this->text($node->textContent)) as $sentence) {
+                    if(mb_strlen($sentence)>=35 && mb_strlen($sentence)<=800 && !preg_match('/\b(?:XX(?:\.XX)?|COVID-?19)\b/i',$sentence))return $sentence;
+                }
+            }
+        }
+        return '';
+    }
+    private function periodAnswer(\DOMDocument $doc, array $attributes): string
+    {
+        $forecast=$attributes['forecast period']??'';$base=$attributes['base year for estimation']??$attributes['base year']??'';
+        $plain=$this->text($doc->textContent);
+        if(!preg_match('/^(20\d{2})\s*(?:-|\x{2013}|\x{2014}|to)\s*(20\d{2})$/u',$forecast,$years)) {
+            if(!preg_match('/\b(20\d{2})\s*(?:-|\x{2013}|\x{2014}|to)\s*(20\d{2})\s+(?:as\s+)?(?:the\s+)?forecast period\b/iu',$plain,$years))return '';
+        }
+        if((int)$years[1]>=(int)$years[2])return '';
+        if(!preg_match('/^20\d{2}$/',$base))$base=preg_match('/\b(20\d{2})\s+(?:as\s+)?(?:the\s+)?base year\b/i',$plain,$m)?$m[1]:'';
+        return 'The report covers a forecast period of '.$years[1].'-'.$years[2].($base!==''?', with '.$base.' as the base year.':'.').' Numerical market-size and CAGR figures are not provided in the public summary.';
+    }
     public function generate(object $report): array
     {
-        $market=$this->market($report);$doc=$this->document($report->content ?? '');$sentences=$this->sentences($doc);
+        $market=$this->market($report);$doc=$this->document($report->content ?? '');$sentences=$this->sentences($doc);$attributes=$this->attributes($doc);
         $size=$this->selected($sentences,fn($s)=>preg_match('/(?:USD|US\s*\$|\$)\s*[0-9][0-9,.]*\s*(?:million|billion|trillion)\b/i',$s) && preg_match('/\bmarket\b/i',$s) && preg_match('/\b(?:size|valued|worth|reach|projected|forecast)\b/i',$s));
         if ($size!=='') {
             $growth=$this->selected($sentences,fn($s)=>preg_match('/\bCAGR\b.{0,80}\b[0-9]+(?:\.[0-9]+)?\s*%/i',$s) && !str_contains($size,$s),500);
             if($growth!=='' && mb_strlen($size.' '.$growth)<=2000)$size.=' '.$growth;
         }
+        if($size==='')$size=$this->periodAnswer($doc,$attributes);
         $trends=$this->selected($sentences,fn($s)=>preg_match('/\b(?:driven by|growth is fueled by|key trends? (?:include|are)|major trends? (?:include|are)|rising demand for|key challenges? (?:include|are)|main restraints? (?:include|are)|opportunities (?:include|arise))\b/i',$s) && !preg_match('/\b(?:report (?:covers|includes|provides)|will be covered|analysis of)\b/i',$s));
+        if($trends==='') {
+            $sections=[];
+            foreach(['/\b(?:market drivers?|growth drivers?)\b/i','/\btrends?(?:\s*&\s*developments)?\b/i','/\b(?:market restraints?|key challenges?)\b/i'] as $pattern) {
+                $answer=$this->sectionAnswer($doc,$pattern);if($answer!=='')$sections[]=$answer;
+            }
+            $trends=implode(' ',array_unique($sections));
+        }
         $groups=[];$companies=[];
         foreach($doc->getElementsByTagName('*') as $heading) {
             if(!preg_match('/^h[2-4]$/i',$heading->tagName))continue;
@@ -74,7 +117,7 @@ class ReportFaqs
                 $values=$this->listAfter($heading);
                 if($values) $groups[]=trim($m[1]," :").' ('.implode(', ',array_slice($values,0,12)).')';
             }
-            if(!$companies && preg_match('/(?:companies (?:profiled|covered)|key (?:companies|players)|leading (?:companies|players))/i',$text)) $companies=$this->listAfter($heading);
+            if(!$companies && preg_match('/(?:companies (?:profiled|covered)|key (?:market )?(?:companies|players)|leading (?:companies|players))/i',$text)) $companies=$this->listAfter($heading);
         }
         $key=json_decode($report->key_info ?? '',true);if(!is_array($key))$key=[];
         if(!$groups) foreach($key as $name=>$value) {
@@ -85,6 +128,7 @@ class ReportFaqs
         $segments=$groups ? 'The report segments the '.$market.' by '.implode('; ',array_slice($groups,0,8)).'.' : '';
         if(mb_strlen($segments)>2800)$segments='The report segments the '.$market.' by '.implode(', ',array_map(fn($s)=>strtok($s,'('),array_slice($groups,0,8))).'.';
         $regions=$this->selected($sentences,fn($s)=>preg_match('/\b(?:North America|Europe|Asia(?: Pacific)?|Latin America|South America|Middle East|Africa|China|India|United States)\b/i',$s) && preg_match('/\b(?:dominates?|largest|leads?|leading region|fastest[- ]growing|highest growth|grow at (?:a )?significantly high)\b/i',$s));
+        if($regions==='' && !empty($attributes['regional scope']) && !preg_match('/\bXX\b|\[Region/i',$attributes['regional scope']))$regions='The report covers '.$attributes['regional scope'].'. The public summary does not specify a leading region or the fastest-growing region.';
         if($regions!=='' && !preg_match('/fastest|highest growth|most rapidly|quickest/i',$regions))$regions.=' The available summary does not identify the fastest-growing region.';
         $companies=array_values(array_filter($companies,fn($v)=>!preg_match('/other (?:players|companies)|can be added|specific interest/i',$v)));
         $players=$companies ? implode('; ',array_slice($companies,0,5)) : $this->text(app(ReportOptions::class)->value($key['key_players'] ?? $key['key_companies'] ?? $key['companies'] ?? ''));

@@ -6,7 +6,7 @@ The four legacy hardcoded report FAQs are replaced across existing and new repor
 
 `ReportFaqs` extracts plain sentences and structured lists from the saved report summary and segment/company data. It makes no network calls and uses no paid service. Market-size facts require an actual currency value and market context; XX placeholders and company valuations do not qualify. Trends and regional findings require explicit statements in the report. Segmentation follows the actual report headings/lists, with key-info fallback. Companies come from the profiled-companies list or key info; selection criteria and numerical rankings are not invented.
 
-Unsupported answers remain blank in the editor and are omitted from public pages and FAQ structured data. The report's own years, units and geographic scope are retained. Nothing is inferred from the current date or the generic graphic period. Extraction is conservative and should be reviewed for editorial accuracy; it does not independently verify source research.
+When numerical figures are unavailable but the report supplies a forecast/base period, the size answer states that period and explicitly notes that numerical figures are not provided. If only regional coverage is supplied, the region answer lists coverage and states that leading/fastest rankings are not specified. Other unsupported answers remain blank and are omitted from public pages and FAQ structured data. Explicit Drivers, Trends and Restraints sections are also read. The report's own years, units and geographic scope are retained. Nothing is inferred from the current date or the generic graphic period. Extraction is conservative and should be reviewed for editorial accuracy; it does not independently verify source research.
 
 ## Editing
 
