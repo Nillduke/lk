@@ -20,5 +20,5 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->redirectUsersTo(fn () => route('dashboard'));
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        $exceptions->dontFlash(['smtp_password']);
+        $exceptions->dontFlash(['smtp_password','turnstile_secret','cf-turnstile-response']);
     })->create();

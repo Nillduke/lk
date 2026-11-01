@@ -181,15 +181,25 @@ return view($view, ['title' => $title, 'countries' => $this->countries(), 'indus
     {
         $type = explode('/', $request->path())[0];
         $types = ['request-a-sample' => '1', 'ask-for-discount' => '2', 'enquiry-before-buying' => '3', 'request-for-customization' => '4', 'contactus' => '5', 'searchfor' => '6', 'request-toc' => '7'];
-        $data = $request->validate(['full_name' => 'required|string|max:100', 'email_id' => 'required|email|max:100', 'contact_no' => 'required|string|max:100', 'company' => 'nullable|string|max:50', 'role' => 'nullable|string|max:50', 'country' => 'nullable|string|max:100', 'message' => 'nullable|string|max:500']);
+        foreach (['website_url','url2','pkjl'] as $trap) {
+            $value=$request->input($trap);
+            if ($value !== null && $value !== '') throw \Illuminate\Validation\ValidationException::withMessages(['form'=>'We could not validate this enquiry. Please refresh and try again.']);
+        }
+        $noLinks = new \App\Rules\NoEnquiryLinks;
+        $data = $request->validate([
+            'full_name'=>['required','string','min:2','max:100','not_regex:/[\r\n]/',$noLinks],
+            'email_id'=>['required','email:rfc','max:100',new \App\Rules\NoEnquiryLinks(true)],
+            'contact_no'=>['required','string','max:40',$noLinks,new \App\Rules\EnquiryPhone],
+            'company'=>[$type==='contactus'?'required':'nullable','string','max:50',$noLinks],
+            'role'=>['nullable','string','max:50',$noLinks],
+            'country'=>[$type==='contactus'?'required':'nullable','string','max:100',$noLinks],
+            'message'=>[$type==='contactus'?'required':'nullable','string',$type==='contactus'?'min:10':'min:0','max:500',$noLinks],
+        ]);
+        $request->validate(['city'=>['nullable','string','max:100',$noLinks]]);
         if ($id) {
             abort_unless(DB::table('reports')->where('id', $id)->where('status', 1)->exists(), 404);
         }
-        if (config('site.recaptcha.enabled')) {
-            $request->validate(['g-recaptcha-response' => 'required|string']);
-            $check = Http::asForm()->timeout(15)->post('https://www.google.com/recaptcha/api/siteverify', ['secret' => config('site.recaptcha.secret'), 'response' => $request->input('g-recaptcha-response'), 'remoteip' => $request->ip()]);
-            abort_unless($check->json('success'), 422, 'Captcha verification failed');
-        }
+        app(\App\Services\TurnstileVerification::class)->verify($request, $type);
         $data += ['uuid' => (string) Str::uuid(), 'report_id' => $id, 'type' => $types[$type], 'status' => '1', 'created_at' => now(), 'updated_at' => now()];
         $enquiryId = DB::table('reports_enquiries')->insertGetId($data);
         self::notify($data['email_id'], 'Thank you for your enquiry', 'We have received your enquiry and will contact you shortly.');

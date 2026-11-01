@@ -16,9 +16,9 @@
                         <p class="req-sample-title mb-2"><strong>Pages: </strong> {{ $report->pages }} </p>
                         <p class="req-sample-title mb-2"><strong>Published Date: </strong> {{ site_date($report->pub_date, 'M Y') }} </p>
                         <p class="req-sample-title mb-2"><strong>Price: </strong> $ {{ $report->lic_price }} </p>
-                    </div><div class="enquiry-form-panel"><form action="{{ route('enquiry_buying_process',$report->id) }}" method="post" class="enquiry-form">
+                    </div><div class="enquiry-form-panel"><form data-enquiry-form action="{{ route('enquiry_buying_process',$report->id) }}" method="post" class="enquiry-form">
 @csrf
-                        <p style="display: none;"> <input type="hidden" name="pkjl" value="" /> </p>    
+                        <p style="display: none;"> <input type="hidden" name="pkjl" value="" /> </p>
                         <div class="row mb-3">
                                 <div class="col">
                                     <div class="form-floating">
@@ -32,7 +32,7 @@
                                         <label for="floatingEmail">Email Id</label>
                                     </div>
                                 </div>
-                               
+
                             </div>
                             <div class="row mb-3">
                                 <div class="col">
@@ -45,16 +45,16 @@
                                     <div class="form-floating">
                                         <select class="form-select" id="floatingCountry" aria-label="Country" name="country" id="country" required>
                                             <option value="" selected>Select Country</option>
-                                            @php 
+                                            @php
                                             foreach ($countries as $country) { @endphp
-                                                <option value="{{ $country->nicename }}" 
+                                                <option value="{{ $country->nicename }}"
                                                 @php if($country->nicename == old('country')){
                                                     echo 'selected';
                                                 }@endphp>
                                                 {{ $country->nicename }}
                                             </option>
                                             @php } @endphp
-                                           
+
                                         </select>
                                         <label for="floatingCountry">Select Country</label>
                                     </div>
@@ -77,17 +77,18 @@
                             <div class="form-group" style="margin-top: 20px;margin-bottom: 20px;">
                                 <div class="row">
                                     <div class="col-12">
-                                        
+
                                     </div>
                                 </div>
                             </div>
-                           
+
+                            @include('include.form-protection', ['formAction'=>'enquiry-before-buying'])
                             <div class="form-row">
                                 <div class="col">
                                     <button class="btn btn-request-submit" name="Submit">Submit</button>
                                 </div>
                             </div>
-                        @if(config('site.recaptcha.enabled'))<div class="g-recaptcha my-3" data-sitekey="{{ config('site.recaptcha.site_key') }}"></div>@endif
+
 </form></div></main><aside class="enquiry-support" aria-label="Report inclusions and assistance">@include('include.enquiry-support')</aside></section></div>
 @endsection
 @section('footer_script')

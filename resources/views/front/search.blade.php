@@ -1,6 +1,6 @@
 @extends('layout.default')
 @section('head_meta')
-    
+
     <style>
         #g-recaptcha-response {
     display: block !important;
@@ -166,14 +166,14 @@ input, textarea, select, textarea::-webkit-input-placeholder, input::-webkit-inp
             </div>
         </div>
     </div>
-    @php //if ($s && count($list) > 0) {@endphp       
-    
+    @php //if ($s && count($list) > 0) {@endphp
+
     <div class="container">
         <div class="row">
             <div class="col-12">
                 <h2>{{ count($list) > 0 ? 'Search' : 'No results for keyword, try another!' }}</h2>
                 <div class="search-results">
-                    @php 
+                    @php
                     if(count($list) > 0){
                         foreach ($list as $key => $report) { @endphp
                         <div class="latRepbox">
@@ -198,17 +198,17 @@ input, textarea, select, textarea::-webkit-input-placeholder, input::-webkit-inp
                             </div>
                         </div>
                         @php }
-                        } else {@endphp                            
+                        } else {@endphp
                         @php }@endphp
                 </div>
-                
+
             </div>
-            
+
         </div>
     </div>
    @if(isset($searchPagination))<div class="container catalogue-pagination">{{ $searchPagination->links() }}</div>@endif
-   @php //}@endphp  
-   @php if ($s && count($list) == 0) {@endphp                        
+   @php //}@endphp
+   @php if ($s && count($list) == 0) {@endphp
     <!-- FORM -->
     <div class="container">
         <div class="row">
@@ -221,33 +221,33 @@ input, textarea, select, textarea::-webkit-input-placeholder, input::-webkit-inp
                 @php } @endphp
                 <div class="new-absec">
                     <div class="body">
-                        <h2>CONTACT US</h2>					
+                        <h2>CONTACT US</h2>
                         <p><i class="fa fa-phone"></i> <strong>Phone</strong><span>+91 -930-705-6852</span></p>
                         <p><i class="fa fa-envelope"></i> <strong>Mail Us</strong><span>{{ config('site.sales_email') }}</span></p>
                         <p><i class="fa fa-map-marker"></i><span>Office No.A-3/308, <br>3rd Floor Premnagar Complex, <br>Mumbai-MH, 400605, India.</span></p>
                     </div>
                 </div>
-            <form action="{{ route('search_form_process') }}" method="post" class="form-horizontal ei-nform new-cform" id="sampleForm">
+            <form data-enquiry-form action="{{ route('search_form_process') }}" method="post" class="form-horizontal ei-nform new-cform" id="sampleForm">
 @csrf
                 <input type="hidden" name="s" value="{{ $s }}">
                 @php $ferrors = session()->get('error_messages');@endphp
-                    <h2>REQUEST A CALL BACK 
+                    <h2>REQUEST A CALL BACK
                     <span>Our customer support team will be happy to answer your needs</span></h2>
                 <!--<p>Fill in the following details and we shall get in touch with you.</p>-->
                     <div class="form-group">
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <label class="interior-field-label" for="name">Enter Your Name *</label><input type="text" class="form-control" id="name" placeholder="Enter Your Name" name="full_name" required="" value="{{ old('full_name') }}">
-                            @php 
+                            @php
                             if(isset($ferrors['full_name'])){@endphp
-                                <small class="text-danger">{{ $ferrors['full_name'] }}</small>  
+                                <small class="text-danger">{{ $ferrors['full_name'] }}</small>
                             @php } @endphp
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="interior-field-label" for="email_id">Enter Your Email *</label><input type="text" class="form-control" id="email_id" placeholder="Enter Your Email" name="email_id" required="" value="{{ old('email_id') }}">
-                            @php 
+                            @php
                             if(isset($ferrors['email_id'])){@endphp
-                                <small class="text-danger">{{ $ferrors['email_id'] }}</small>  
+                                <small class="text-danger">{{ $ferrors['email_id'] }}</small>
                             @php } @endphp
                         </div>
                     </div>
@@ -256,75 +256,68 @@ input, textarea, select, textarea::-webkit-input-placeholder, input::-webkit-inp
                     <div class="row">
                     <div class="col-12 col-md-6">
                             <label class="interior-field-label" for="contact_no">Enter Contact Number *</label><input type="text" class="form-control" id="contact_no" placeholder="Enter Contact Number" name="contact_no" required="" value="{{ old('contact_no') }}" >
-                            @php 
+                            @php
                             if(isset($ferrors['contact_no'])){@endphp
-                                <small class="text-danger">{{ $ferrors['contact_no'] }}</small>  
+                                <small class="text-danger">{{ $ferrors['contact_no'] }}</small>
                             @php } @endphp
                         </div>
-                            <div class="col-12 col-md-6">                            
+                            <div class="col-12 col-md-6">
                                 <select name="country" id="country" class="form-control">
                                         <option value="" selected>Select Country</option>
-                                        @php 
+                                        @php
                                         foreach ($countries as $country) { @endphp
-                                            <option value="{{ $country->nicename }}" 
+                                            <option value="{{ $country->nicename }}"
                                             @php if($country->nicename == old('country')){
                                                 echo 'selected';
                                             }@endphp>{{ $country->nicename }}</option>
                                         @php } @endphp
                                 </select>
-                                @php 
+                                @php
                                 if(isset($ferrors['country'])){@endphp
-                                    <small class="text-danger">{{ $ferrors['country'] }}</small>  
+                                    <small class="text-danger">{{ $ferrors['country'] }}</small>
                                 @php } @endphp
                             </div>
-                        
+
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <div class="row">
                     <div class="col-12 col-md-6">
-                            <label class="interior-field-label" for="company">Enter Company *</label><input type="text" class="form-control" id="company" placeholder="Enter Company" name="company" required="" value="{{ old('full_name') }}">
-                            
+                            <label class="interior-field-label" for="company">Enter Company *</label><input type="text" class="form-control" id="company" placeholder="Enter Company" name="company" required="" value="{{ old('company') }}">
+
                         </div>
                         <div class="col-12 col-md-6">
                             <label class="interior-field-label" for="message">Enter Message</label><textarea class="form-control" rowa="2" id="message" name="message" placeholder="Enter Message">{{ old('message') }}</textarea>
-                            @php 
+                            @php
                             if(isset($ferrors['message'])){@endphp
-                                <small class="text-danger">{{ $ferrors['message'] }}</small>  
+                                <small class="text-danger">{{ $ferrors['message'] }}</small>
                             @php } @endphp
                         </div>
                     </div>
-                    
+
                 </div>
                 <div class="form-group">
                     <div class="row">
                         <div class="col-12">
-                            
+
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-12 row">	
+                @include('include.form-protection', ['formAction'=>'searchfor'])
+                        <div class="col-sm-12 row">
                 <button type="submit">Submit <i class="fa fa-paper-plane" aria-hidden="true"></i></button>
                 </div>
-	        @if(config('site.recaptcha.enabled'))<div class="g-recaptcha my-3" data-sitekey="{{ config('site.recaptcha.site_key') }}"></div>@endif
+
 </form>
 	</div>
 	</div>
 	</div>
 	</div>
-    @php }@endphp  
+    @php }@endphp
     @php session()->forget('error_messages');@endphp
 @endsection
 @section('footer_script')
-<script>
-    window.onload = function() {
-    var $recaptcha = document.querySelector('#g-recaptcha-response');
 
-    if($recaptcha) {
-        $recaptcha.setAttribute("required", "required");
-    }
-};
-</script>
 
 @endsection

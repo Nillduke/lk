@@ -56,7 +56,7 @@ $pageKind = match (true) {
     <title>{{ $title ?? config('app.name') }}</title>
     <link rel="shortcut icon" href="/frontend/images/favicon.png" />
 
-@if(config('site.recaptcha.enabled'))<script src="https://www.google.com/recaptcha/api.js" async defer></script>@endif
+
 <link rel="preload" href="{{ asset('frontend/fonts/roboto-400-common.e2df779d91d1.woff2') }}" as="font" type="font/woff2" crossorigin>
 @unless(request()->routeIs('rd_view'))
 <link rel="preload" href="{{ asset('frontend/fonts/playfair-display-400-common.c5e10ffbbb10.woff2') }}" as="font" type="font/woff2" crossorigin>
@@ -78,5 +78,6 @@ $pageKind = match (true) {
     @if($isInterior)<script src="{{ asset('frontend/js/interior-design.js') }}?v=20261024-perf1" defer></script>@endif
     <script src="{{ asset('frontend/js/mobile-responsive.js') }}?v=20261024-no-banner" defer></script>
     @yield('footer_script')
+    @stack('form_security_scripts')
 </body>
 </html>

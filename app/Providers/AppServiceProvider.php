@@ -21,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
         Paginator::useBootstrapFive();
         if (!$this->app->runningUnitTests()) {
             $this->app->make(\App\Services\EmailSettings::class)->apply();
+            $this->app->make(\App\Services\FormProtectionSettings::class)->apply();
         }
     }
 }

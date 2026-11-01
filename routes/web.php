@@ -29,7 +29,7 @@ foreach (['request-a-sample' => ['request_sample', 'request_sample_process'], 'a
     Route::post($path.'/{id}', [Site::class, 'enquiry'])->whereNumber('id')->middleware('throttle:15,1')->name($names[1]);
 }
 Route::post('request-toc/{id}', [Site::class, 'enquiry'])->whereNumber('id')->middleware('throttle:15,1')->name('request_toc_process');
-Route::post('contactus', [Site::class, 'enquiry'])->middleware('throttle:15,1')->name('contactUsProcess');
+Route::post('contactus', [Site::class, 'enquiry'])->middleware('throttle:5,1')->name('contactUsProcess');
 Route::post('searchfor', [Site::class, 'enquiry'])->middleware('throttle:15,1')->name('search_form_process');
 Route::get('{type}/thankyou', [Site::class, 'thanks'])->whereIn('type', ['request-a-sample', 'ask-for-discount', 'ask-discount', 'enquiry-before-buying', 'request-for-customization', 'request-toc', 'contactus', 'searchfor'])->name('enquiry_success');
 Route::get('unsubscribe', [Site::class, 'unsubscribe'])->name('unsubscribe');
@@ -64,6 +64,8 @@ Route::post('authuser/logout', [Auth::class, 'logout'])->middleware('auth')->nam
 Route::get('authuser/logout', [Auth::class, 'logout'])->middleware('auth')->name('logout');
 Route::prefix('authuser')->middleware(['auth', AdminAccess::class])->group(function () {
     Route::get('dashboard', [Admin::class, 'dashboard'])->name('dashboard');
+    Route::get('settings/forms', [\App\Http\Controllers\FormProtectionController::class, 'edit'])->name('admin.forms.edit');
+    Route::post('settings/forms', [\App\Http\Controllers\FormProtectionController::class, 'update'])->middleware('throttle:10,1')->name('admin.forms.update');
     Route::get('settings/email', [\App\Http\Controllers\EmailSettingsController::class, 'edit'])->name('admin.email.edit');
     Route::post('settings/email', [\App\Http\Controllers\EmailSettingsController::class, 'update'])->middleware('throttle:10,1')->name('admin.email.update');
     Route::get('settings/email/preview', [\App\Http\Controllers\EmailSettingsController::class, 'preview'])->name('admin.email.preview');
