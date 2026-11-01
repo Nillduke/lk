@@ -2,7 +2,7 @@
 <p>The report considers 2018-2020 as historic period, 2021 as base year, and 2022-2028 as forecast period. The report includes quantitative analysis of the market supported by the market drivers, challenges, and trends to accurately map the market scenario and competition. Moreover, key insights related to market having direct impact on the market will also be covered.</p>
 
 <p>{{ $keyword }} Market report is based on robust research methodology designed using blend of research ap-proaches developed using secondary/desk research and validated through the primary research and expert insights. Eternity Insights also uses paid data bases such as FACIVA, Hoovers, and other bench-marking and forecasting tools to provide accurate statistical analysis of supply and demand trends.</p>
-<h2>Global {{ $keyword }} Market Size, 2018-2028 (USD Million)</h2>
+<h2>Global {{ $keyword }} Market Size, {{ config('report_graphics.historical_start') }}-{{ config('report_graphics.forecast_end') }} (USD Million)</h2>
 <p class="imglink">
     <img src="/frontend/images/market-size.svg" alt="{{ $keyword }} Market Size">
 </p>

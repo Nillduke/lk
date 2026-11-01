@@ -15,6 +15,7 @@ class ReportContentGenerator
     public function image(int $id, string $keyword, array $segments): array
     {
         $svg = view('template.rdsvg', ['keyword' => $keyword, 'types' => $segments['types'] ?? '', 'applications' => $segments['applications'] ?? ''])->render();
+        $svg = app(ReportGraphics::class)->taxonomy($svg);
         // Content-addressed names never overwrite another report's original image.
         $path = 'uploads/images/reports/'.$id.'/'.substr(hash('sha256', $svg), 0, 20).'.svg';
         $target = public_path($path);

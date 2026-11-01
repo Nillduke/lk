@@ -50,7 +50,7 @@
 <h2>Key Research Highlights: Trends</h2>
 <p><strong>Increasing research and development spending on {{ $keyword }} development has been the leading industry trend of {{ $keyword }} market</strong></p>
 <p>The leading players in the market are focused on developing products which are cost effective and high quality to tap the huge unaddressed opportunities in the developing regions. This can be wit-nessed from the increasing spending on research and development and growing number of new product approvals.</p>
-<h2>Global {{ $keyword }} Market Size, 2018-2028 (USD MILLION)</h2>
+<h2>Global {{ $keyword }} Market Size, {{ config('report_graphics.historical_start') }}-{{ config('report_graphics.forecast_end') }} (USD MILLION)</h2>
 <p class="imglink">
     <img src="/frontend/images/market-size.svg" alt="{{ $keyword }} Market Size">
 </p>

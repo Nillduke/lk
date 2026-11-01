@@ -19,6 +19,7 @@ foreach (['aboutus' => 'aboutus', 'services' => 'services', 'faqs' => 'faqs', 'h
 }
 Route::get('all-reports', [Site::class, 'listing'])->name('all_reports');
 Route::get('report/amp/{slug}', [Site::class, 'report'])->name('rd_amp');
+Route::get('report-graphics/{id}/{kind}.svg', [\App\Http\Controllers\ReportGraphicController::class, 'show'])->whereNumber('id')->whereIn('kind', ['size','region','taxonomy'])->name('report_graphic');
 Route::get('report/{slug}', [Site::class, 'report'])->name('rd_view');
 Route::get('industry/{slug}', [Site::class, 'listing'])->name('industry_list');
 Route::get('searchfor', [Site::class, 'search'])->name('search');

@@ -94,6 +94,7 @@ return view($view, ['title' => $title, 'countries' => $this->countries(), 'indus
     {
         $report = self::catalogue()->leftJoin('publishers as p', 'p.id', '=', 'r.publisher_id')->leftJoin('reports_meta as m', 'm.report_id', '=', 'r.id')->addSelect('p.name as publisher_name', 'm.content', 'm.toc', 'm.tables_figures')->where('r.slug', $slug)->where('r.status', 1)->first();
         abort_unless($report, 404);
+        $report->content = app(\App\Services\ReportGraphics::class)->content($report);
         $key = json_decode($report->key_info ?? '', true) ?: [];
         $keyword = $report->keyword ?: preg_replace('/\s+market.*$/i', '', $report->title);
         $similar = self::catalogue()->where('r.category_id', $report->category_id)->where('r.status', 1)->where('r.id', '!=', $report->id)->orderByDesc('r.pub_date')->limit(10)->get()->all();
