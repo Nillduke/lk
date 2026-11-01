@@ -78,28 +78,18 @@
                                 <h2 class="req-sample-about mb-0">Continue For Payment Method</h2>
                             </div>
                             <div class="billing-wraper">
-                                @php $ccaReady=app(\App\Services\CcavenueSettings::class)->ready(); $defaultPayment=$ccaReady?'CCAvenue':(config('site.paypal.enabled')?'PayPal':'Wire Transfer'); @endphp
-                                @if($ccaReady)<div class="row mb-3"><div class="col-12"><label class="payment-method d-flex align-items-center justify-content-center gap-3" style="cursor:pointer"><input type="radio" name="payment_mode" class="form-radio" value="CCAvenue" @checked(old('payment_mode',$defaultPayment)==='CCAvenue')><span><strong>CCAvenue</strong><br><small>Credit / debit cards and available online payment methods</small></span></label>@if(config('ccavenue.mode')==='test')<p class="small text-center text-muted">CCAvenue test mode</p>@endif</div></div>@endif
+                                @php $ccaReady=app(\App\Services\CcavenueSettings::class)->ready(); $defaultPayment=$ccaReady?'CCAvenue':'Wire Transfer'; @endphp
+                                @if($ccaReady)<div class="row mb-3"><div class="col-12"><label class="payment-method d-flex align-items-center justify-content-center gap-3" style="cursor:pointer"><input type="radio" name="payment_mode" class="form-radio" value="CCAvenue" required @checked(old('payment_mode',$defaultPayment)==='CCAvenue')><span><img src="{{ asset('frontend/images/ccavenue-logo.png') }}" alt="CCAvenue" width="126" height="29" style="object-fit:contain;margin-bottom:8px"><br><small>Credit / debit cards and available online payment methods</small></span></label>@if(config('ccavenue.mode')==='test')<p class="small text-center text-muted">CCAvenue test mode</p>@endif</div></div>@endif
 
-                                <div class="row mb-3">
-                                    <div class="col-12">
-                                        <div class="payment-method text-center">
-                                            <input type="radio" name="payment_mode" class="form-radio" value="PayPal" @checked(old('payment_mode',$defaultPayment)==='PayPal') @disabled(!config('site.paypal.enabled'))>
-                                            <button type="button" class="btn btn-paypal">
-                                                <img src="/frontend/images/paypal.png" style="height:30px;" alt="eternity paypal" class="img-fluid">
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
                                 <div class="row mb-4">
                                     <div class="col-12">
-                                        <div class="payment-method text-center">
-                                            <input type="radio" name="payment_mode" class="form-radio" value="Wire Transfer" @checked(old('payment_mode',$defaultPayment)==='Wire Transfer')>
-                                            <button type="button" class="btn btn-debcred">
+                                        <label class="payment-method d-flex align-items-center justify-content-center gap-3" style="cursor:pointer">
+                                            <input type="radio" name="payment_mode" class="form-radio" value="Wire Transfer" required @checked(old('payment_mode',$defaultPayment)==='Wire Transfer')>
+                                            <span class="btn btn-debcred">
                                                 <img src="/frontend/images/credit-debit.png" style="height:30px;" alt="eternity credit-debit" class="img-fluid">
                                                 Wire Transfer
-                                            </button>
-                                        </div>
+                                            </span>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -113,7 +103,7 @@
 @csrf -->
                                 <div class="row mb-3">
                                 <div class="col">
-                                        <label class="interior-field-label" for="billingName">Full Name</label><input type="text" class="form-control" id="billingName" placeholder="Full Name" name="name" value="{{ (($is_global ? true : false) ? $checkout->name : old('name')) }}" required>
+                                        <label class="interior-field-label" for="billingName">Full Name</label><input type="text" class="form-control" id="billingName" minlength="3" maxlength="60" placeholder="Full Name" name="name" value="{{ (($is_global ? true : false) ? $checkout->name : old('name')) }}" required>
                                     </div>
                                     <div class="col">
                                         <input type="hidden" name="report_id" value="{{ (($is_global ? true : false) ? $checkout->report_id : session('chk_report')) }}">
@@ -123,17 +113,17 @@
                                 </div>
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <label class="interior-field-label" for="billingPhone">Phone No.</label><input type="tel" class="form-control" id="billingPhone" placeholder="Phone No." name="contact_no" value="{{ (($is_global ? true : false) ? $checkout->contact_no : old('contact_no')) }}" required>
+                                        <label class="interior-field-label" for="billingPhone">Phone No.</label><input type="tel" class="form-control" id="billingPhone" maxlength="25" placeholder="Phone No." name="contact_no" value="{{ (($is_global ? true : false) ? $checkout->contact_no : old('contact_no')) }}" required>
                                     </div>
                                     <div class="col">
-                                        <label class="interior-field-label" for="billingCompany">Company</label><input type="text" class="form-control" id="billingCompany" placeholder="Company" name="company" value="{{ (($is_global ? true : false) ? $checkout->company : old('company')) }}" required>
+                                        <label class="interior-field-label" for="billingCompany">Company</label><input type="text" class="form-control" id="billingCompany" placeholder="Company" name="company" value="{{ (($is_global ? true : false) ? $checkout->company : old('company')) }}">
                                     </div>
                                 </div>
                                                         
                                                             
                                 <div class="row mb-3">
                                     <div class="col">
-                                        <label class="interior-field-label" for="billingCountry">Country *</label><select class="form-select" id="billingCountry" aria-label="Country"  name="country" id="country" required>
+                                        <label class="interior-field-label" for="billingCountry">Country *</label><select class="form-select" id="billingCountry" aria-label="Country"  name="country" required>
                                         <option value="" selected>Select Country</option>
                                             @php 
                                             foreach ($countries as $country) { @endphp
@@ -161,7 +151,7 @@
                                     <div class="col">
                                         <div class="form-check">
                                             <label class="form-check-label">
-                                                <input class="form-check-input" type="checkbox" name="remember" required>
+                                                <input class="form-check-input" type="checkbox" name="remember" @checked(old('remember')) required>
                                                 <span class="rememberMe">
                                                     I have read and agree to the <a href="{{ route('termsConditions') }}" target="_blank">Terms &amp; Condition</a>
                                                 </span>
@@ -192,7 +182,20 @@
             $(".lice_price").html(pr);
             $("#amtotpay").val(pr);           
         });
-    
+
+        var checkoutForm = document.querySelector('form[action="{{ route('checkoutFormProcess') }}"]');
+        if (checkoutForm) {
+            checkoutForm.addEventListener('submit', function () {
+                var button = checkoutForm.querySelector('button[name="Submit"]');
+                button.disabled = true;
+                button.textContent = 'Connecting to payment...';
+            });
+            window.addEventListener('pageshow', function () {
+                var button = checkoutForm.querySelector('button[name="Submit"]');
+                button.disabled = false;
+                button.textContent = 'Continue to payment';
+            });
+        }
     });
 </script>
 @endsection

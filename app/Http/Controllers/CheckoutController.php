@@ -49,21 +49,18 @@ class CheckoutController extends Controller
 
     public function store(Request $request, \App\Services\CcavenueSettings $ccaSettings, \App\Services\CcavenueGateway $gateway)
     {
-        $data = $request->validate(['report_id' => 'required|integer|exists:reports,id', 'name' => 'required|string|max:100', 'email' => 'required|email|max:100', 'contact_no' => 'required|string|max:100', 'country' => 'required|string|max:100', 'company' => 'nullable|string|max:50', 'address' => 'nullable|string|max:500', 'message' => 'nullable|string|max:500', 'payment_mode' => 'required|in:CCAvenue,PayPal,Wire Transfer,wire transfer', 'remember'=>'accepted']);
+        $data = $request->validate(['report_id' => 'required|integer|exists:reports,id', 'name' => 'required|string|min:3|max:60', 'email' => 'required|email|max:100', 'contact_no' => ['required','string','max:25','regex:/\A\+?[0-9][0-9 ()-]{5,23}\z/'], 'country' => 'required|string|max:100', 'company' => 'nullable|string|max:50', 'address' => 'nullable|string|max:500', 'message' => 'nullable|string|max:500', 'payment_mode' => 'required|in:CCAvenue,Wire Transfer,wire transfer', 'remember'=>'accepted']);
         abort_unless(DB::table('reports')->where('id',$data['report_id'])->where('status',1)->exists(),422,'This report is not available.');
         $q = DB::table('reports_licenses')->where('report_id', $data['report_id']);
         $licenseName = explode(':', (string) $request->input('license'))[0];
         $license = $request->filled('report_lic_id') ? (clone $q)->where('id', $request->report_lic_id)->first() : (clone $q)->where('lic_name', $licenseName)->first();
         abort_unless($license, 422, 'Select a valid report license.');
-        if (strtolower($data['payment_mode']) === 'paypal' && ! config('site.paypal.enabled')) {
-            return back()->withInput()->withErrors(['payment_mode' => 'PayPal is not configured. Select Wire Transfer or configure PayPal in .env.']);
-        }
         if ($data['payment_mode'] === 'CCAvenue' && !$ccaSettings->ready()) return back()->withInput()->withErrors(['payment_mode'=>'CCAvenue is not available. Please select another payment method.']);
         $source = session('checkout_source') ? DB::table('checkouts')->where('id',session('checkout_source'))->where('is_active',1)->where('report_id',$data['report_id'])->where('report_license_id',$license->id)->where('payment_status','!=','Success')->first() : null;
         $amount = $source ? $source->amt_tobe_paid : $license->lic_price;
         abort_unless(\App\Services\CcavenueGateway::money($amount)>0 && (!$source || $source->currency==='USD'),422,'A valid USD price is required.');
         $order = 'ORD'.now()->format('YmdHis').Str::upper(Str::random(6));
-        $payment = $data['payment_mode']==='CCAvenue' ? 'CCAvenue' : (strtolower($data['payment_mode']) === 'paypal' ? 'PayPal' : 'Wire Transfer');
+        $payment = $data['payment_mode']==='CCAvenue' ? 'CCAvenue' : 'Wire Transfer';
         unset($data['payment_mode'], $data['remember']);
         $row = $data + ['uuid' => (string) Str::uuid(), 'report_license_id' => $license->id, 'order_number' => $order, 'license_type' => $license->lic_name, 'total_amount' => $license->lic_price, 'amt_tobe_paid' => $amount, 'currency' => 'USD', 'payment_by' => $payment, 'payment_status' => 'Pending', 'status' => '1', 'is_active' => 1, 'created_at' => now(), 'updated_at' => now()];
         $checkoutId = DB::transaction(function () use ($row, $payment, $gateway) {
@@ -74,9 +71,12 @@ class CheckoutController extends Controller
             return $id;
         });
         session(['order_number' => $order, 'checkout_id' => $checkoutId]);
-        SiteController::notify(config('site.admin_email'), 'New checkout attempt', $order.' - '.$data['email'], true);
+        app(\App\Services\CheckoutNotifications::class)->created(
+            DB::table('checkouts')->where('id', $checkoutId)->first(),
+            DB::table('reports')->where('id', $data['report_id'])->first()
+        );
 
-        return redirect()->route($payment==='CCAvenue' ? 'ccavenue.redirect' : ($payment === 'PayPal' ? 'paypal_redirect' : 'wt_success'));
+        return redirect()->route($payment==='CCAvenue' ? 'ccavenue.redirect' : 'wt_success');
     }
 
     private function paypal()

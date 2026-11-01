@@ -84,4 +84,22 @@ class CcavenuePaymentTest extends TestCase
   $this->assertDatabaseHas('checkouts',['id'=>$order->id+1,'amt_tobe_paid'=>2800]);
  }
 
+
+ public function test_checkout_sends_pending_acknowledgments_to_admin_and_customer_with_private_admin_copies():void {
+  \Illuminate\Support\Facades\Mail::fake();
+  config(['site.mail_notifications'=>true,'site.admin_email'=>'sales@example.com','site.admin_bcc'=>'manager@example.com']);
+  $this->attempt();
+  \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\CheckoutReceived::class,fn($m)=>$m->forAdmin && $m->hasTo('sales@example.com') && $m->hasBcc('manager@example.com'));
+  \Illuminate\Support\Facades\Mail::assertSent(\App\Mail\CheckoutReceived::class,fn($m)=>!$m->forAdmin && $m->hasTo('buyer@example.test') && !$m->hasBcc('manager@example.com'));
+  \Illuminate\Support\Facades\Mail::assertSentCount(2);
+  $order=DB::table('checkouts')->first();$order->name='<script>alert(1)</script>';
+  $html=(new \App\Mail\CheckoutReceived($order,DB::table('reports')->first()))->render();
+  $this->assertStringContainsString('Payment is pending',$html);$this->assertStringContainsString('not a payment receipt',$html);
+  $this->assertStringNotContainsString('<script>',$html);$this->assertStringContainsString('&lt;script&gt;',$html);
+ }
+ public function test_paypal_cannot_be_selected_for_new_checkouts_and_checkout_has_ccavenue_logo():void {
+  $p=$this->payload();$p['payment_mode']='PayPal';$this->postJson('/checkoutprocess',$p)->assertUnprocessable()->assertJsonValidationErrors('payment_mode');
+  $this->assertDatabaseCount('checkouts',0);
+  $this->get('/checkout-form/1')->assertOk()->assertSee('ccavenue-logo.png')->assertDontSee('value="PayPal"',false)->assertDontSee('paypal.png');
+ }
 }
